@@ -174,6 +174,19 @@
     border: 1px solid rgba(255,255,255,0.9);
   }
 
+  .shared-banner {
+    background: linear-gradient(135deg, #e3f2fd, #e8f5e9);
+    border: 1px solid #87c5d8;
+    color: #333;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 1.05em;
+    display: none;
+  }
+
   .question-block {
     background: rgba(255, 255, 255, 0.65);
     padding: 30px;
@@ -482,18 +495,20 @@
       </svg>
     </div>
     <h1 id="title">Ayurvedic Dosha Quiz</h1>
+    <div class="shared-banner" id="shared-banner"></div>
     <div class="instruction-box" id="instructions"></div>
   </div>
   
   <div id="quiz-content"></div>
   
-  <button onclick="processInitialSubmit()" id="submit-btn" style="display:none;">Reveal My Dosha</button>
+  <button onclick="calculateResults()" id="submit-btn">Reveal My Dosha</button>
   <div id="results"></div>
 </div>
 
 <script>
   let currentLang = 'en';
   let selections = { prakruti: {}, vikruti: {} };
+  let isSharedView = false;
   
   const translations = {
     en: { 
@@ -508,10 +523,10 @@
       rank: "Rank", primary: "Primary", secondary: "Secondary", tertiary: "Tertiary",
       dashboardTitle: "Final Dosha Designation",
       constPrakruti: "Constitution",
-      copyProfile: "Copy Result Link",
-      shareProfile: "Share Link",
-      resetQuiz: "Retake Quiz",
-      takeQuiz: "Take the Quiz",
+      copyProfile: "Copy Link",
+      shareProfile: "Share Profile",
+      resetQuiz: "Clear & Restart",
+      sharedMsg: "You are viewing a shared Dosha profile. You can adjust the answers below.",
       copied: "Copied!"
     },
     vi: { 
@@ -526,10 +541,10 @@
       rank: "Hạng", primary: "Chính", secondary: "Phụ", tertiary: "Thứ 3",
       dashboardTitle: "Phân Loại Thể Tạng",
       constPrakruti: "Prakruti",
-      copyProfile: "Sao chép liên kết",
+      copyProfile: "Sao chép link",
       shareProfile: "Chia sẻ",
-      resetQuiz: "Làm lại",
-      takeQuiz: "Làm Bài Trắc Nghiệm",
+      resetQuiz: "Làm lại từ đầu",
+      sharedMsg: "Bạn đang xem hồ sơ Thể tạng được chia sẻ. Bạn có thể điều chỉnh các câu trả lời bên dưới.",
       copied: "Đã sao chép!"
     }
   };
@@ -578,59 +593,60 @@
     { id: "speech", en: { trait: "Speech", vata: "Rapid, unclear, airy, anxious", pitta: "Sharp, penetrating, convincing", kapha: "Slow, monotonous, soothing" }, vi: { trait: "Cách nói", vata: "Nhanh, không rõ ràng, nhẹ thoáng, có vẻ lo âu", pitta: "Sắc, thuyết phục, có sức xuyên thấu", kapha: "Chậm, đều đều, dịu và tạo cảm giác xoa dịu" } }
   ];
 
-  function getShareableLink(counts) {
+  /* --- COMPRESSION LOGIC FOR SHARING --- */
+  function encodeState() {
+    const map = { 'vata': 'v', 'pitta': 'p', 'kapha': 'k' };
+    let pStr = questions.map(q => map[selections.prakruti[q.id]] || '-').join('');
+    let vStr = questions.map(q => map[selections.vikruti[q.id]] || '-').join('');
+    
+    // Trim trailing empty dashes to keep URL super short
+    pStr = pStr.replace(/-+$/, '');
+    vStr = vStr.replace(/-+$/, '');
+    
+    return `${pStr}_${vStr}`;
+  }
+
+  function decodeState(encodedStr) {
+    const reverseMap = { 'v': 'vata', 'p': 'pitta', 'k': 'kapha' };
+    const parts = encodedStr.split('_');
+    const pStr = parts[0] || '';
+    const vStr = parts[1] || '';
+    
+    selections = { prakruti: {}, vikruti: {} };
+    
+    for (let i = 0; i < questions.length; i++) {
+      if (pStr[i] && reverseMap[pStr[i]]) {
+        selections.prakruti[questions[i].id] = reverseMap[pStr[i]];
+      }
+      if (vStr[i] && reverseMap[vStr[i]]) {
+        selections.vikruti[questions[i].id] = reverseMap[vStr[i]];
+      }
+    }
+  }
+
+  function getShareableLink() {
     const baseUrl = window.location.origin + window.location.pathname;
-    const pStr = [counts.prakruti.vata, counts.prakruti.pitta, counts.prakruti.kapha].join(',');
-    const vStr = [counts.vikruti.vata, counts.vikruti.pitta, counts.vikruti.kapha].join(',');
-    return baseUrl + '?p=' + pStr + '&v=' + vStr + '&l=' + currentLang;
-  }
-
-  function getCurrentCounts() {
-    let counts = { prakruti: { vata: 0, pitta: 0, kapha: 0 }, vikruti: { vata: 0, pitta: 0, kapha: 0 } };
-    for (let key in selections.prakruti) { counts.prakruti[selections.prakruti[key]]++; }
-    for (let key in selections.vikruti) { counts.vikruti[selections.vikruti[key]]++; }
-    return counts;
-  }
-
-  function getProfileTextFormat(pRank, vRank) {
-    const textData = {
-      en: `My Ayurvedic Profile:\n\nConstitution (Prakruti):\nPrimary: ${capitalize(pRank[0])}\nSecondary: ${capitalize(pRank[1])}\nTertiary: ${capitalize(pRank[2])}\n\nCurrent Imbalance (Vikruti):\nPrimary: ${capitalize(vRank[0])}\nSecondary: ${capitalize(vRank[1])}\nTertiary: ${capitalize(vRank[2])}`,
-      vi: `Hồ sơ Ayurveda của tôi:\n\nThể tạng bẩm sinh (Prakruti):\nChính: ${capitalize(pRank[0])}\nPhụ: ${capitalize(pRank[1])}\nThứ ba: ${capitalize(pRank[2])}\n\nMất cân bằng hiện tại (Vikruti):\nChính: ${capitalize(vRank[0])}\nPhụ: ${capitalize(vRank[1])}\nThứ ba: ${capitalize(vRank[2])}`
-    };
-    return textData[currentLang];
+    const shortCode = encodeState();
+    return `${baseUrl}?d=${shortCode}&l=${currentLang}`;
   }
 
   function exportToText() {
-    let counts = getCurrentCounts();
-    let pRank = Object.keys(counts.prakruti).sort((a, b) => counts.prakruti[b] - counts.prakruti[a]);
-    let vRank = Object.keys(counts.vikruti).sort((a, b) => counts.vikruti[b] - counts.vikruti[a]);
-    const link = getShareableLink(counts);
-    
-    const textToCopy = getProfileTextFormat(pRank, vRank) + '\n\nLink: ' + link;
-    
-    navigator.clipboard.writeText(textToCopy).then(() => {
+    const link = getShareableLink();
+    navigator.clipboard.writeText(link).then(() => {
       const copyBtn = document.getElementById('copyTextBtn');
       const originalText = copyBtn.innerHTML;
       copyBtn.innerHTML = `${copyIcon} ${translations[currentLang].copied}`;
       setTimeout(() => { copyBtn.innerHTML = originalText; }, 2000);
-    }).catch(err => {
-      console.error('Failed to copy text: ', err);
-    });
+    }).catch(err => console.error('Failed to copy: ', err));
   }
 
   function shareResults() {
-    let counts = getCurrentCounts();
-    const link = getShareableLink(counts);
-    let pRank = Object.keys(counts.prakruti).sort((a, b) => counts.prakruti[b] - counts.prakruti[a]);
-    let vRank = Object.keys(counts.vikruti).sort((a, b) => counts.vikruti[b] - counts.vikruti[a]);
-
+    const link = getShareableLink();
     const titleText = currentLang === 'en' ? 'My Ayurvedic Dosha Profile' : 'Hồ sơ Thể tạng Ayurveda của tôi';
-    const textData = getProfileTextFormat(pRank, vRank) + '\n\nLink: ' + link;
 
     if (navigator.share) {
       navigator.share({
         title: titleText,
-        text: textData,
         url: link
       }).catch(err => console.log('Error sharing', err));
     } else {
@@ -638,14 +654,30 @@
     }
   }
 
+  /* --- CORE APP LOGIC --- */
+  function initQuiz() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('l')) {
+      currentLang = params.get('l');
+    }
+    
+    if (params.has('d')) {
+      isSharedView = true;
+      decodeState(params.get('d'));
+      // Remove query string silently so it doesn't stay if they refresh
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+      loadLocalData();
+    }
+    
+    setLang(currentLang);
+  }
+
   function loadLocalData() {
     const saved = localStorage.getItem('doshaSelections');
     if (saved) {
-      try {
-        selections = JSON.parse(saved);
-      } catch(e) {
-        selections = { prakruti: {}, vikruti: {} };
-      }
+      try { selections = JSON.parse(saved); } 
+      catch(e) { selections = { prakruti: {}, vikruti: {} }; }
     }
   }
 
@@ -656,68 +688,36 @@
   function resetQuizData() {
     selections = { prakruti: {}, vikruti: {} };
     saveLocalData();
-    window.location.href = window.location.pathname;
-  }
-
-  function checkSharedLink(params) {
-    if (params.has('p') && params.has('v')) {
-      document.getElementById('title').innerText = translations[currentLang].title;
-      document.getElementById('instructions').style.display = 'none';
-      document.getElementById('btn-en').classList.remove('active');
-      document.getElementById('btn-vi').classList.remove('active');
-      document.getElementById(`btn-${currentLang}`).classList.add('active');
-      
-      const pVals = params.get('p').split(',');
-      const vVals = params.get('v').split(',');
-      if (pVals.length === 3 && vVals.length === 3) {
-        const sharedCounts = {
-          prakruti: { vata: parseInt(pVals[0]), pitta: parseInt(pVals[1]), kapha: parseInt(pVals[2]) },
-          vikruti: { vata: parseInt(vVals[0]), pitta: parseInt(vVals[1]), kapha: parseInt(vVals[2]) }
-        };
-        displayDashboard(sharedCounts, true);
-        return true;
-      }
-    }
-    return false;
-  }
-
-  function initQuiz() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.has('l')) {
-      currentLang = params.get('l');
-    }
-    
-    if (checkSharedLink(params)) {
-      return;
-    } else {
-      loadLocalData();
-      setLang(currentLang);
-    }
+    isSharedView = false;
+    document.getElementById('shared-banner').style.display = 'none';
+    setLang(currentLang);
+    window.scrollTo({top: 0, behavior: 'smooth'});
   }
 
   function setLang(lang) {
     currentLang = lang;
     document.getElementById('title').innerText = translations[currentLang].title;
+    document.getElementById('instructions').innerHTML = translations[currentLang].instructions;
     document.getElementById('submit-btn').innerText = translations[currentLang].submit;
-    
-    const instr = document.getElementById('instructions');
-    if (instr) instr.innerHTML = translations[currentLang].instructions;
     
     document.getElementById('btn-en').classList.remove('active');
     document.getElementById('btn-vi').classList.remove('active');
     document.getElementById(`btn-${lang}`).classList.add('active');
-    
-    const params = new URLSearchParams(window.location.search);
-    if (checkSharedLink(params)) {
-       return;
-    }
-    
-    if(document.getElementById('results').innerHTML.trim() !== '') {
-      let counts = getCurrentCounts();
-      displayDashboard(counts, false); 
+
+    const banner = document.getElementById('shared-banner');
+    if(isSharedView) {
+      banner.innerHTML = translations[currentLang].sharedMsg;
+      banner.style.display = 'block';
     } else {
-      renderQuiz();
+      banner.style.display = 'none';
     }
+    
+    renderQuiz();
+    
+    if (isSharedView || document.getElementById('results').innerHTML.trim() !== '') {
+      calculateResults(); 
+    }
+    
     updateProgress();
   }
 
@@ -728,6 +728,9 @@
       selections[type][qId] = dosha;
     }
     
+    // If they edit a shared view, treat it as their own from now on
+    isSharedView = false;
+    document.getElementById('shared-banner').style.display = 'none';
     saveLocalData();
     
     const buttons = document.querySelectorAll(`.sel-btn[data-qid="${qId}"][data-type="${type}"]`);
@@ -740,14 +743,16 @@
     });
 
     updateProgress();
+    
+    if(document.getElementById('results').innerHTML.trim() !== '') {
+      calculateResults(false); 
+    }
   }
   
   function updateProgress() {
     let answered = 0;
     questions.forEach(q => {
-      if (selections.prakruti[q.id] || selections.vikruti[q.id]) {
-        answered++;
-      }
+      if (selections.prakruti[q.id] || selections.vikruti[q.id]) answered++;
     });
     const progress = (answered / questions.length) * 100;
     document.getElementById('progress-bar').style.width = `${progress}%`;
@@ -801,14 +806,12 @@
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  function displayDashboard(counts, isShared) {
-    document.getElementById('quiz-content').innerHTML = '';
+  function calculateResults(scrollToBottom = true) {
     document.getElementById('submit-btn').style.display = 'none';
-    
-    const instr = document.getElementById('instructions');
-    if (instr) instr.style.display = 'none';
-    
-    document.getElementById('progress-bar').style.width = '100%';
+
+    let counts = { prakruti: { vata: 0, pitta: 0, kapha: 0 }, vikruti: { vata: 0, pitta: 0, kapha: 0 } };
+    for (let key in selections.prakruti) { counts.prakruti[selections.prakruti[key]]++; }
+    for (let key in selections.vikruti) { counts.vikruti[selections.vikruti[key]]++; }
 
     let resultsHTML = `<div class="results-container">`;
     
@@ -823,7 +826,6 @@
         </div>
       `;
     });
-    
     resultsHTML += `</div>`;
 
     let prakrutiRank = Object.keys(counts.prakruti).sort((a, b) => counts.prakruti[b] - counts.prakruti[a]);
@@ -855,41 +857,28 @@
           <td>${capitalize(vikrutiRank[2])}</td>
         </tr>
       </table>
+      
+      <div class="action-buttons">
+        <button class="action-btn" id="copyTextBtn" onclick="exportToText()">
+          ${copyIcon} ${translations[currentLang].copyProfile}
+        </button>
+        <button class="action-btn" onclick="shareResults()">
+          ${shareIcon} ${translations[currentLang].shareProfile}
+        </button>
+        <button class="action-btn" onclick="resetQuizData()">
+          ${resetIcon} ${translations[currentLang].resetQuiz}
+        </button>
+      </div>
     `;
-
-    if (isShared) {
-      resultsHTML += `
-        <div class="action-buttons">
-          <button class="action-btn" onclick="window.location.href = window.location.pathname">
-            ${resetIcon} ${translations[currentLang].takeQuiz}
-          </button>
-        </div>
-      `;
-    } else {
-      resultsHTML += `
-        <div class="action-buttons">
-          <button class="action-btn" id="copyTextBtn" onclick="exportToText()">
-            ${copyIcon} ${translations[currentLang].copyProfile}
-          </button>
-          <button class="action-btn" onclick="shareResults()">
-            ${shareIcon} ${translations[currentLang].shareProfile}
-          </button>
-          <button class="action-btn" onclick="resetQuizData()">
-            ${resetIcon} ${translations[currentLang].resetQuiz}
-          </button>
-        </div>
-      `;
-    }
     
     document.getElementById('results').innerHTML = resultsHTML;
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    
+    if (scrollToBottom) {
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
-  function processInitialSubmit() {
-    let counts = getCurrentCounts();
-    displayDashboard(counts, false);
-  }
-
+  // Initialize on Load
   initQuiz();
 </script>
 </body>
