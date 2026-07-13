@@ -707,44 +707,60 @@
 
   async function exportToText() {
     const counts = getCurrentCounts();
-    const response = await fetch('/.netlify/functions/saveQuiz', {
-      method: 'POST',
-      body: JSON.stringify(counts)
-    });
-    const result = await response.json();
-    const link = window.location.origin + window.location.pathname + '?id=' + result.id + '&l=' + currentLang;
-    
-    let pRank = Object.keys(counts.prakruti).sort((a, b) => counts.prakruti[b] - counts.prakruti[a]);
-    let vRank = Object.keys(counts.vikruti).sort((a, b) => counts.vikruti[b] - counts.vikruti[a]);
-    
-    const textToCopy = getProfileTextFormat(pRank, vRank) + '\n\nLink: ' + link;
-    
-    navigator.clipboard.writeText(textToCopy).then(() => {
-      const copyBtn = document.getElementById('copyTextBtn');
-      const originalText = copyBtn.innerHTML;
-      copyBtn.innerHTML = translations[currentLang].copied;
-      setTimeout(() => { copyBtn.innerHTML = originalText; }, 2000);
-    });
+    try {
+      const response = await fetch('/.netlify/functions/saveQuiz', {
+        method: 'POST',
+        body: JSON.stringify(counts)
+      });
+      
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const result = await response.json();
+      const link = window.location.origin + window.location.pathname + '?id=' + result.id + '&l=' + currentLang;
+      
+      let pRank = Object.keys(counts.prakruti).sort((a, b) => counts.prakruti[b] - counts.prakruti[a]);
+      let vRank = Object.keys(counts.vikruti).sort((a, b) => counts.vikruti[b] - counts.vikruti[a]);
+      
+      const textToCopy = getProfileTextFormat(pRank, vRank) + '\n\nLink: ' + link;
+      
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const copyBtn = document.getElementById('copyTextBtn');
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = translations[currentLang].copied;
+        setTimeout(() => { copyBtn.innerHTML = originalText; }, 2000);
+      });
+    } catch (e) {
+      console.error("Function failed to trigger:", e);
+      alert("Sharing failed. Ensure Netlify functions and Supabase are correctly configured.");
+    }
   }
 
   async function shareResults() {
     const counts = getCurrentCounts();
-    const response = await fetch('/.netlify/functions/saveQuiz', {
-      method: 'POST',
-      body: JSON.stringify(counts)
-    });
-    const result = await response.json();
-    const link = window.location.origin + window.location.pathname + '?id=' + result.id + '&l=' + currentLang;
-
-    const titleText = currentLang === 'en' ? 'My Ayurvedic Dosha Profile' : 'Hồ sơ Thể tạng Ayurveda của tôi';
-
-    if (navigator.share) {
-      navigator.share({
-        title: titleText,
-        url: link
+    try {
+      const response = await fetch('/.netlify/functions/saveQuiz', {
+        method: 'POST',
+        body: JSON.stringify(counts)
       });
-    } else {
-      exportToText(); 
+      
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const result = await response.json();
+      const link = window.location.origin + window.location.pathname + '?id=' + result.id + '&l=' + currentLang;
+
+      const titleText = currentLang === 'en' ? 'My Ayurvedic Dosha Profile' : 'Hồ sơ Thể tạng Ayurveda của tôi';
+
+      if (navigator.share) {
+        navigator.share({
+          title: titleText,
+          url: link
+        });
+      } else {
+        exportToText(); 
+      }
+    } catch (e) {
+      console.error("Function failed to trigger:", e);
+      alert("Sharing failed. Ensure Netlify functions and Supabase are correctly configured.");
     }
   }
 
@@ -756,11 +772,15 @@
       document.getElementById('btn-vi').classList.remove('active');
       document.getElementById(`btn-${currentLang}`).classList.add('active');
       
-      const response = await fetch('/.netlify/functions/getQuiz?id=' + params.get('id'));
-      if (response.ok) {
-        const sharedCounts = await response.json();
-        displayDashboard(sharedCounts, true);
-        return true;
+      try {
+        const response = await fetch('/.netlify/functions/getQuiz?id=' + params.get('id'));
+        if (response.ok) {
+          const sharedCounts = await response.json();
+          displayDashboard(sharedCounts, true);
+          return true;
+        }
+      } catch (e) {
+        console.error("Failed to load shared quiz:", e);
       }
     }
     return false;
@@ -797,6 +817,8 @@
     saveLocalData();
     isSharedView = false;
     document.getElementById('shared-banner').style.display = 'none';
+    document.getElementById('results').innerHTML = ''; // Clear results
+    window.history.replaceState({}, document.title, window.location.pathname); // Clear URL
     setLang(currentLang);
     window.scrollTo({top: 0, behavior: 'smooth'});
   }
@@ -819,10 +841,11 @@
       banner.style.display = 'none';
     }
     
-    renderQuiz();
-    
-    if (isSharedView || document.getElementById('results').innerHTML.trim() !== '') {
+    // Check if we are showing results or the quiz
+    if (document.getElementById('results').innerHTML.trim() !== '') {
       calculateResults(); 
+    } else {
+      renderQuiz();
     }
     
     updateProgress();
@@ -891,26 +914,4 @@
       
       html += `<div class="selection-area">`;
       ['prakruti', 'vikruti'].forEach(type => {
-        const label = type === 'prakruti' ? translations[currentLang].longTerm : translations[currentLang].present;
-        html += `<div class="selection-row">
-                  <div class="selection-label">${label}</div>
-                  <div class="selection-buttons">`;
-        ['vata', 'pitta', 'kapha'].forEach(dosha => {
-          const isSelected = selections[type][q.id] === dosha ? 'selected' : '';
-          html += `<button class="sel-btn ${dosha} ${isSelected}" data-qid="${q.id}" data-type="${type}" data-dosha="${dosha}" onclick="selectOption('${type}', '${q.id}', '${dosha}')">${translations[currentLang][dosha]}</button>`;
-        });
-        html += `</div></div>`;
-      });
-      html += `</div>`;
-      
-      block.innerHTML = html;
-      container.appendChild(block);
-    });
-    document.getElementById('submit-btn').style.display = 'block';
-  }
-
-  // Initialize on Load
-  initQuiz();
-</script>
-</body>
-</html>
+        const label = type === 'prakr
