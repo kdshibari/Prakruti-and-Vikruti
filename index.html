@@ -914,4 +914,28 @@
       
       html += `<div class="selection-area">`;
       ['prakruti', 'vikruti'].forEach(type => {
-        const label = type === 'prakr
+        const label = type === 'prakruti' ? translations[currentLang].longTerm : translations[currentLang].present;
+        html += `<div class="selection-row">
+                  <div class="selection-label">${label}</div>
+                  <div class="selection-buttons">`;
+        ['vata', 'pitta', 'kapha'].forEach(dosha => {
+          const isSelected = selections[type][q.id] === dosha ? 'selected' : '';
+          html += `<button class="sel-btn ${dosha} ${isSelected}" data-qid="${q.id}" data-type="${type}" data-dosha="${dosha}" onclick="selectOption('${type}', '${q.id}', '${dosha}')">${translations[currentLang][dosha]}</button>`;
+        });
+        html += `</div></div>`;
+      });
+      html += `</div>`;
+      
+      block.innerHTML = html;
+      container.appendChild(block);
+    });
+    
+    document.getElementById('instructions').style.display = 'block';
+    document.getElementById('submit-btn').style.display = 'block';
+  }
+
+  // Initialize on Load
+  initQuiz();
+</script>
+</body>
+</html>
