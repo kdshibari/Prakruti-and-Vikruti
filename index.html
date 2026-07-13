@@ -705,7 +705,7 @@
     displayDashboard(counts, false);
   }
 
-  async function exportToText() {
+async function exportToText() {
     const counts = getCurrentCounts();
     try {
       const response = await fetch('/.netlify/functions/saveQuiz', {
@@ -718,12 +718,7 @@
       const result = await response.json();
       const link = window.location.origin + window.location.pathname + '?id=' + result.id + '&l=' + currentLang;
       
-      let pRank = Object.keys(counts.prakruti).sort((a, b) => counts.prakruti[b] - counts.prakruti[a]);
-      let vRank = Object.keys(counts.vikruti).sort((a, b) => counts.vikruti[b] - counts.vikruti[a]);
-      
-      const textToCopy = getProfileTextFormat(pRank, vRank) + '\n\nLink: ' + link;
-      
-      navigator.clipboard.writeText(textToCopy).then(() => {
+      navigator.clipboard.writeText(link).then(() => {
         const copyBtn = document.getElementById('copyTextBtn');
         const originalText = copyBtn.innerHTML;
         copyBtn.innerHTML = translations[currentLang].copied;
