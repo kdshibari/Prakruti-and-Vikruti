@@ -488,7 +488,7 @@
   
   <div class="header-section" id="header-section">
     <div class="logo-container">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z" stroke-dasharray="2 2"/>
         <circle cx="12" cy="12" r="2" fill="currentColor"/>
@@ -527,7 +527,7 @@
       shareProfile: "Share Profile",
       resetQuiz: "Clear & Restart",
       takeQuiz: "Take the Quiz",
-      sharedMsg: "You are viewing a shared Dosha profile. You can adjust the answers below.",
+      sharedMsg: "You are viewing a shared Dosha profile. You can scroll through the quiz to see the answers.",
       copied: "Copied!"
     },
     vi: { 
@@ -546,7 +546,7 @@
       shareProfile: "Chia sẻ",
       resetQuiz: "Làm lại từ đầu",
       takeQuiz: "Làm Bài Trắc Nghiệm",
-      sharedMsg: "Bạn đang xem hồ sơ Thể tạng được chia sẻ. Bạn có thể điều chỉnh các câu trả lời bên dưới.",
+      sharedMsg: "Bạn đang xem hồ sơ Thể tạng được chia sẻ. Bạn có thể cuộn xuống để xem các câu trả lời.",
       copied: "Đã sao chép!"
     }
   };
@@ -617,12 +617,7 @@
 
   /* --- DISPLAY DASHBOARD --- */
   function displayDashboard(counts, isShared) {
-    document.getElementById('quiz-content').innerHTML = '';
     document.getElementById('submit-btn').style.display = 'none';
-    
-    const instr = document.getElementById('instructions');
-    if (instr) instr.style.display = 'none';
-    
     document.getElementById('progress-bar').style.width = '100%';
 
     let resultsHTML = `<div class="results-container">`;
@@ -697,20 +692,25 @@
     }
     
     document.getElementById('results').innerHTML = resultsHTML;
-    window.scrollTo({top: 0, behavior: 'smooth'});
+
+    // Scroll to the results if you are submitting your own test
+    if (!isSharedView) {
+      setTimeout(() => {
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
   }
 
   function calculateResults() {
     const counts = getCurrentCounts();
-    displayDashboard(counts, false);
+    displayDashboard(counts, isSharedView);
   }
 
-async function exportToText() {
-    const counts = getCurrentCounts();
+  async function exportToText() {
     try {
       const response = await fetch('/.netlify/functions/saveQuiz', {
         method: 'POST',
-        body: JSON.stringify(counts)
+        body: JSON.stringify(selections)
       });
       
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -731,11 +731,10 @@ async function exportToText() {
   }
 
   async function shareResults() {
-    const counts = getCurrentCounts();
     try {
       const response = await fetch('/.netlify/functions/saveQuiz', {
         method: 'POST',
-        body: JSON.stringify(counts)
+        body: JSON.stringify(selections)
       });
       
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -761,17 +760,13 @@ async function exportToText() {
 
   async function checkSharedLink(params) {
     if (params.has('id')) {
-      document.getElementById('title').innerText = translations[currentLang].title;
-      document.getElementById('instructions').style.display = 'none';
-      document.getElementById('btn-en').classList.remove('active');
-      document.getElementById('btn-vi').classList.remove('active');
-      document.getElementById(`btn-${currentLang}`).classList.add('active');
-      
       try {
         const response = await fetch('/.netlify/functions/getQuiz?id=' + params.get('id'));
         if (response.ok) {
-          const sharedCounts = await response.json();
-          displayDashboard(sharedCounts, true);
+          const sharedSelections = await response.json();
+          selections = sharedSelections;
+          isSharedView = true;
+          setLang(currentLang);
           return true;
         }
       } catch (e) {
@@ -812,8 +807,8 @@ async function exportToText() {
     saveLocalData();
     isSharedView = false;
     document.getElementById('shared-banner').style.display = 'none';
-    document.getElementById('results').innerHTML = ''; // Clear results
-    window.history.replaceState({}, document.title, window.location.pathname); // Clear URL
+    document.getElementById('results').innerHTML = ''; // Clear results dashboard
+    window.history.replaceState({}, document.title, window.location.pathname); // Clear URL parameters
     setLang(currentLang);
     window.scrollTo({top: 0, behavior: 'smooth'});
   }
@@ -836,11 +831,12 @@ async function exportToText() {
       banner.style.display = 'none';
     }
     
-    // Check if we are showing results or the quiz
-    if (document.getElementById('results').innerHTML.trim() !== '') {
+    // Always build and display the quiz
+    renderQuiz();
+    
+    // If viewing a shared link OR if results were already visible, render the dashboard at the bottom
+    if (isSharedView || document.getElementById('results').innerHTML.trim() !== '') {
       calculateResults(); 
-    } else {
-      renderQuiz();
     }
     
     updateProgress();
@@ -870,7 +866,7 @@ async function exportToText() {
     updateProgress();
     
     if(document.getElementById('results').innerHTML.trim() !== '') {
-      calculateResults(false); 
+      calculateResults(); 
     }
   }
   
@@ -924,8 +920,6 @@ async function exportToText() {
       block.innerHTML = html;
       container.appendChild(block);
     });
-    
-    document.getElementById('instructions').style.display = 'block';
     document.getElementById('submit-btn').style.display = 'block';
   }
 
