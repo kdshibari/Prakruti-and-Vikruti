@@ -358,35 +358,27 @@
   }
   
   .action-btn {
-    padding: 12px 25px;
+    padding: 15px 25px;
     border-radius: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #eaeaea;
     background: #fff;
-    color: var(--text-main);
-    cursor: pointer;
+    color: #4a4a4a;
     font-family: 'Outfit', sans-serif;
-    font-size: 0.95em;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    font-weight: 600;
+    font-size: 1em;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
   
   .action-btn:hover {
-    background: #f8f9fa;
     transform: translateY(-2px);
-  }
-  
-  .btn-danger {
-    color: #d32f2f;
-    border-color: #ffcdd2;
-    background: #fffafa;
-  }
-  
-  .btn-danger:hover {
-    background: #ffebee;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
   }
 
-  /* Mobile Compatibility Adjustments */
   @media (max-width: 768px) {
     body { padding: 10px; }
     
@@ -456,6 +448,8 @@
     
     .results-container { flex-direction: column; }
     .dashboard-table th, .dashboard-table td { padding: 12px 5px; font-size: 0.85em; }
+    
+    .action-btn { flex: 1; min-width: 45%; justify-content: center; padding: 12px 10px; font-size: 0.95em; }
   }
 </style>
 </head>
@@ -481,7 +475,7 @@
   
   <div class="header-section" id="header-section">
     <div class="logo-container">
-      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z" stroke-dasharray="2 2"/>
         <circle cx="12" cy="12" r="2" fill="currentColor"/>
@@ -493,7 +487,7 @@
   
   <div id="quiz-content"></div>
   
-  <button onclick="calculateResults()" id="submit-btn">Reveal My Dosha</button>
+  <button onclick="processInitialSubmit()" id="submit-btn" style="display:none;">Reveal My Dosha</button>
   <div id="results"></div>
 </div>
 
@@ -514,10 +508,11 @@
       rank: "Rank", primary: "Primary", secondary: "Secondary", tertiary: "Tertiary",
       dashboardTitle: "Final Dosha Designation",
       constPrakruti: "Constitution",
-      share: "Share Results",
-      copyText: "Copy Profile to Text",
-      retake: "Retake Quiz",
-      copied: "Profile copied to clipboard!"
+      copyProfile: "Copy Result Link",
+      shareProfile: "Share Link",
+      resetQuiz: "Retake Quiz",
+      takeQuiz: "Take the Quiz",
+      copied: "Copied!"
     },
     vi: { 
       title: "Bảng Câu Hỏi Thể Tạng", 
@@ -531,10 +526,11 @@
       rank: "Hạng", primary: "Chính", secondary: "Phụ", tertiary: "Thứ 3",
       dashboardTitle: "Phân Loại Thể Tạng",
       constPrakruti: "Prakruti",
-      share: "Chia Sẻ Kết Quả",
-      copyText: "Sao Chép Hồ Sơ",
-      retake: "Làm Lại Bài Kiểm Tra",
-      copied: "Đã sao chép hồ sơ!"
+      copyProfile: "Sao chép liên kết",
+      shareProfile: "Chia sẻ",
+      resetQuiz: "Làm lại",
+      takeQuiz: "Làm Bài Trắc Nghiệm",
+      copied: "Đã sao chép!"
     }
   };
 
@@ -543,6 +539,10 @@
     pitta: `<svg class="dosha-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-3.5 0-6 4-6 9 0 4 3.5 11 6 11s6-7 6-11c0-5-2.5-9-6-9z"/><path d="M12 14c-1.5 0-2.5-1-2.5-2.5S10.5 9 12 9s2.5 1 2.5 2.5S13.5 14 12 14z"/></svg>`,
     kapha: `<svg class="dosha-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/><path d="M9 12a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/></svg>`
   };
+
+  const shareIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`;
+  const copyIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+  const resetIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>`;
 
   const questions = [
     { id: "face", en: { trait: "Face", vata: "Oblong, oval, narrow, thin, asymmetry, prominent bone structure", pitta: "Angular, muscular, defined features, rectangular, wider forehead, stronger, heart shaped", kapha: "Round, wide, oval, moon, pear shaped, fleshier, chin wider than forehead" }, vi: { trait: "Gương mặt", vata: "Dài, bầu dục, hẹp, gầy, hơi bất đối xứng, cấu trúc xương nổi rõ", pitta: "Góc cạnh, hoặc cơ bắp, đường nét rõ, hình chữ nhật hoặc hình trái tim, trán rộng", kapha: "Tròn, rộng, bầu dục, hình mặt trăng hoặc quả lê, đầy đặn hơn, cằm thường rộng hơn trán" } },
@@ -578,37 +578,146 @@
     { id: "speech", en: { trait: "Speech", vata: "Rapid, unclear, airy, anxious", pitta: "Sharp, penetrating, convincing", kapha: "Slow, monotonous, soothing" }, vi: { trait: "Cách nói", vata: "Nhanh, không rõ ràng, nhẹ thoáng, có vẻ lo âu", pitta: "Sắc, thuyết phục, có sức xuyên thấu", kapha: "Chậm, đều đều, dịu và tạo cảm giác xoa dịu" } }
   ];
 
-  function loadStorage() {
-    const saved = localStorage.getItem('doshaQuizSelections');
+  function getShareableLink(counts) {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const pStr = [counts.prakruti.vata, counts.prakruti.pitta, counts.prakruti.kapha].join(',');
+    const vStr = [counts.vikruti.vata, counts.vikruti.pitta, counts.vikruti.kapha].join(',');
+    return baseUrl + '?p=' + pStr + '&v=' + vStr + '&l=' + currentLang;
+  }
+
+  function getCurrentCounts() {
+    let counts = { prakruti: { vata: 0, pitta: 0, kapha: 0 }, vikruti: { vata: 0, pitta: 0, kapha: 0 } };
+    for (let key in selections.prakruti) { counts.prakruti[selections.prakruti[key]]++; }
+    for (let key in selections.vikruti) { counts.vikruti[selections.vikruti[key]]++; }
+    return counts;
+  }
+
+  function getProfileTextFormat(pRank, vRank) {
+    const textData = {
+      en: `My Ayurvedic Profile:\n\nConstitution (Prakruti):\nPrimary: ${capitalize(pRank[0])}\nSecondary: ${capitalize(pRank[1])}\nTertiary: ${capitalize(pRank[2])}\n\nCurrent Imbalance (Vikruti):\nPrimary: ${capitalize(vRank[0])}\nSecondary: ${capitalize(vRank[1])}\nTertiary: ${capitalize(vRank[2])}`,
+      vi: `Hồ sơ Ayurveda của tôi:\n\nThể tạng bẩm sinh (Prakruti):\nChính: ${capitalize(pRank[0])}\nPhụ: ${capitalize(pRank[1])}\nThứ ba: ${capitalize(pRank[2])}\n\nMất cân bằng hiện tại (Vikruti):\nChính: ${capitalize(vRank[0])}\nPhụ: ${capitalize(vRank[1])}\nThứ ba: ${capitalize(vRank[2])}`
+    };
+    return textData[currentLang];
+  }
+
+  function exportToText() {
+    let counts = getCurrentCounts();
+    let pRank = Object.keys(counts.prakruti).sort((a, b) => counts.prakruti[b] - counts.prakruti[a]);
+    let vRank = Object.keys(counts.vikruti).sort((a, b) => counts.vikruti[b] - counts.vikruti[a]);
+    const link = getShareableLink(counts);
+    
+    const textToCopy = getProfileTextFormat(pRank, vRank) + '\n\nLink: ' + link;
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      const copyBtn = document.getElementById('copyTextBtn');
+      const originalText = copyBtn.innerHTML;
+      copyBtn.innerHTML = `${copyIcon} ${translations[currentLang].copied}`;
+      setTimeout(() => { copyBtn.innerHTML = originalText; }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  }
+
+  function shareResults() {
+    let counts = getCurrentCounts();
+    const link = getShareableLink(counts);
+    let pRank = Object.keys(counts.prakruti).sort((a, b) => counts.prakruti[b] - counts.prakruti[a]);
+    let vRank = Object.keys(counts.vikruti).sort((a, b) => counts.vikruti[b] - counts.vikruti[a]);
+
+    const titleText = currentLang === 'en' ? 'My Ayurvedic Dosha Profile' : 'Hồ sơ Thể tạng Ayurveda của tôi';
+    const textData = getProfileTextFormat(pRank, vRank) + '\n\nLink: ' + link;
+
+    if (navigator.share) {
+      navigator.share({
+        title: titleText,
+        text: textData,
+        url: link
+      }).catch(err => console.log('Error sharing', err));
+    } else {
+      exportToText(); 
+    }
+  }
+
+  function loadLocalData() {
+    const saved = localStorage.getItem('doshaSelections');
     if (saved) {
       try {
         selections = JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
+      } catch(e) {
+        selections = { prakruti: {}, vikruti: {} };
       }
     }
   }
 
-  function saveStorage() {
-    localStorage.setItem('doshaQuizSelections', JSON.stringify(selections));
+  function saveLocalData() {
+    localStorage.setItem('doshaSelections', JSON.stringify(selections));
   }
 
-  function clearStorage() {
-    localStorage.removeItem('doshaQuizSelections');
+  function resetQuizData() {
     selections = { prakruti: {}, vikruti: {} };
+    saveLocalData();
+    window.location.href = window.location.pathname;
+  }
+
+  function checkSharedLink(params) {
+    if (params.has('p') && params.has('v')) {
+      document.getElementById('title').innerText = translations[currentLang].title;
+      document.getElementById('instructions').style.display = 'none';
+      document.getElementById('btn-en').classList.remove('active');
+      document.getElementById('btn-vi').classList.remove('active');
+      document.getElementById(`btn-${currentLang}`).classList.add('active');
+      
+      const pVals = params.get('p').split(',');
+      const vVals = params.get('v').split(',');
+      if (pVals.length === 3 && vVals.length === 3) {
+        const sharedCounts = {
+          prakruti: { vata: parseInt(pVals[0]), pitta: parseInt(pVals[1]), kapha: parseInt(pVals[2]) },
+          vikruti: { vata: parseInt(vVals[0]), pitta: parseInt(vVals[1]), kapha: parseInt(vVals[2]) }
+        };
+        displayDashboard(sharedCounts, true);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function initQuiz() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('l')) {
+      currentLang = params.get('l');
+    }
+    
+    if (checkSharedLink(params)) {
+      return;
+    } else {
+      loadLocalData();
+      setLang(currentLang);
+    }
   }
 
   function setLang(lang) {
     currentLang = lang;
-    document.getElementById('title').innerText = translations[lang].title;
-    document.getElementById('instructions').innerHTML = translations[lang].instructions;
-    document.getElementById('submit-btn').innerText = translations[lang].submit;
+    document.getElementById('title').innerText = translations[currentLang].title;
+    document.getElementById('submit-btn').innerText = translations[currentLang].submit;
+    
+    const instr = document.getElementById('instructions');
+    if (instr) instr.innerHTML = translations[currentLang].instructions;
     
     document.getElementById('btn-en').classList.remove('active');
     document.getElementById('btn-vi').classList.remove('active');
     document.getElementById(`btn-${lang}`).classList.add('active');
     
-    renderQuiz();
+    const params = new URLSearchParams(window.location.search);
+    if (checkSharedLink(params)) {
+       return;
+    }
+    
+    if(document.getElementById('results').innerHTML.trim() !== '') {
+      let counts = getCurrentCounts();
+      displayDashboard(counts, false); 
+    } else {
+      renderQuiz();
+    }
     updateProgress();
   }
 
@@ -619,7 +728,7 @@
       selections[type][qId] = dosha;
     }
     
-    saveStorage();
+    saveLocalData();
     
     const buttons = document.querySelectorAll(`.sel-btn[data-qid="${qId}"][data-type="${type}"]`);
     buttons.forEach(btn => {
@@ -685,69 +794,21 @@
       block.innerHTML = html;
       container.appendChild(block);
     });
+    document.getElementById('submit-btn').style.display = 'block';
   }
 
   function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  function getProfileText() {
-    let counts = {
-      prakruti: { vata: 0, pitta: 0, kapha: 0 },
-      vikruti: { vata: 0, pitta: 0, kapha: 0 }
-    };
-
-    for (let key in selections.prakruti) { counts.prakruti[selections.prakruti[key]]++; }
-    for (let key in selections.vikruti) { counts.vikruti[selections.vikruti[key]]++; }
-
-    let prakrutiRank = Object.keys(counts.prakruti).sort((a, b) => counts.prakruti[b] - counts.prakruti[a]);
-    let vikrutiRank = Object.keys(counts.vikruti).sort((a, b) => counts.vikruti[b] - counts.vikruti[a]);
+  function displayDashboard(counts, isShared) {
+    document.getElementById('quiz-content').innerHTML = '';
+    document.getElementById('submit-btn').style.display = 'none';
     
-    let title = translations[currentLang].dashboardTitle;
-    let pRank = translations[currentLang].constPrakruti;
-    let vRank = translations[currentLang].resultsPresent;
+    const instr = document.getElementById('instructions');
+    if (instr) instr.style.display = 'none';
     
-    return `${title}\n\n${pRank}:\n1. ${capitalize(prakrutiRank[0])} (${translations[currentLang].primary})\n2. ${capitalize(prakrutiRank[1])} (${translations[currentLang].secondary})\n3. ${capitalize(prakrutiRank[2])} (${translations[currentLang].tertiary})\n\n${vRank}:\n1. ${capitalize(vikrutiRank[0])} (${translations[currentLang].primary})\n2. ${capitalize(vikrutiRank[1])} (${translations[currentLang].secondary})\n3. ${capitalize(vikrutiRank[2])} (${translations[currentLang].tertiary})`;
-  }
-
-  function shareProfile() {
-    const text = getProfileText();
-    if (navigator.share) {
-      navigator.share({
-        title: translations[currentLang].title,
-        text: text
-      }).catch(console.error);
-    } else {
-      copyToClipboard(text);
-    }
-  }
-
-  function copyProfile() {
-    copyToClipboard(getProfileText());
-  }
-
-  function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-      alert(translations[currentLang].copied);
-    });
-  }
-
-  function retakeQuiz() {
-    clearStorage();
-    document.getElementById('progress-bar').style.width = '0%';
-    document.getElementById('results').innerHTML = '';
-    renderQuiz();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function calculateResults() {
-    let counts = {
-      prakruti: { vata: 0, pitta: 0, kapha: 0 },
-      vikruti: { vata: 0, pitta: 0, kapha: 0 }
-    };
-
-    for (let key in selections.prakruti) { counts.prakruti[selections.prakruti[key]]++; }
-    for (let key in selections.vikruti) { counts.vikruti[selections.vikruti[key]]++; }
+    document.getElementById('progress-bar').style.width = '100%';
 
     let resultsHTML = `<div class="results-container">`;
     
@@ -794,21 +855,42 @@
           <td>${capitalize(vikrutiRank[2])}</td>
         </tr>
       </table>
-      
-      <div class="action-buttons">
-        <button class="action-btn" onclick="shareProfile()">${translations[currentLang].share}</button>
-        <button class="action-btn" onclick="copyProfile()">${translations[currentLang].copyText}</button>
-        <button class="action-btn btn-danger" onclick="retakeQuiz()">${translations[currentLang].retake}</button>
-      </div>
     `;
+
+    if (isShared) {
+      resultsHTML += `
+        <div class="action-buttons">
+          <button class="action-btn" onclick="window.location.href = window.location.pathname">
+            ${resetIcon} ${translations[currentLang].takeQuiz}
+          </button>
+        </div>
+      `;
+    } else {
+      resultsHTML += `
+        <div class="action-buttons">
+          <button class="action-btn" id="copyTextBtn" onclick="exportToText()">
+            ${copyIcon} ${translations[currentLang].copyProfile}
+          </button>
+          <button class="action-btn" onclick="shareResults()">
+            ${shareIcon} ${translations[currentLang].shareProfile}
+          </button>
+          <button class="action-btn" onclick="resetQuizData()">
+            ${resetIcon} ${translations[currentLang].resetQuiz}
+          </button>
+        </div>
+      `;
+    }
     
     document.getElementById('results').innerHTML = resultsHTML;
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-    document.getElementById('progress-bar').style.width = '100%';
+    window.scrollTo({top: 0, behavior: 'smooth'});
   }
 
-  loadStorage();
-  setLang('en');
+  function processInitialSubmit() {
+    let counts = getCurrentCounts();
+    displayDashboard(counts, false);
+  }
+
+  initQuiz();
 </script>
 </body>
 </html>
