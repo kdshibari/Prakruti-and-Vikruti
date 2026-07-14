@@ -106,7 +106,7 @@
     z-index: 1;
     display: flex;
     flex-direction: column;
-    margin-top: 20px; /* Offset for fixed language toggle */
+    margin-top: 20px; 
   }
 
   /* Shrinking Progress Bar */
@@ -133,7 +133,7 @@
     padding: 8px 15px;
     margin-bottom: 15px;
     top: 10px;
-    width: 50%; /* Shrinks width horizontally */
+    width: 50%; 
     margin-left: auto;
     margin-right: auto;
     box-shadow: 0 5px 15px rgba(0,0,0,0.04);
@@ -149,7 +149,7 @@
   }
 
   .sticky-top-bar.scrolled .progress-container {
-    height: 4px; /* Thinner line when scrolling */
+    height: 4px; 
   }
 
   .progress-bar {
@@ -169,12 +169,17 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
     border-radius: 50%;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-    margin-bottom: 15px;
-    color: var(--kapha-color);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .logo-container:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
   }
   
   h1 { 
@@ -431,11 +436,11 @@
     .glass-container {
       padding: 20px 10px;
       border-radius: 20px;
-      margin-top: 40px; /* Leave space for language switch */
+      margin-top: 40px; 
     }
     
     .sticky-top-bar.scrolled {
-      width: 85%; /* Don't shrink quite as much on mobile */
+      width: 85%; 
     }
 
     h1 { font-size: 1.6em; }
@@ -513,8 +518,8 @@
 </div>
 
 <div class="fixed-lang-switch">
-  <button class="lang-btn active" id="btn-en" onclick="setLang('en')" title="English">🇬🇧</button>
-  <button class="lang-btn" id="btn-vi" onclick="setLang('vi')" title="Tiếng Việt">🇻🇳</button>
+  <button class="lang-btn active" id="btn-en" onclick="setLang('en')" title="English">&#x1f1ec;&#x1f1e7;</button>
+  <button class="lang-btn" id="btn-vi" onclick="setLang('vi')" title="Tiếng Việt">\01F1FB \01F1F3</button>
 </div>
 
 <div class="glass-container">
@@ -527,10 +532,52 @@
   
   <div class="header-section" id="header-section">
     <div class="logo-container">
-      <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z" stroke-dasharray="2 2"/>
-        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+      <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="pitta-grad" x1="0" y1="0" x2="0" y2="-50">
+            <stop offset="0%" stop-color="#f4a261" stop-opacity="0.2" />
+            <stop offset="100%" stop-color="#f4a261" stop-opacity="0.85" />
+          </linearGradient>
+          <linearGradient id="kapha-grad" x1="0" y1="0" x2="0" y2="-50">
+            <stop offset="0%" stop-color="#81c784" stop-opacity="0.2" />
+            <stop offset="100%" stop-color="#81c784" stop-opacity="0.85" />
+          </linearGradient>
+          <linearGradient id="vata-grad" x1="0" y1="0" x2="0" y2="-50">
+            <stop offset="0%" stop-color="#87c5d8" stop-opacity="0.2" />
+            <stop offset="100%" stop-color="#87c5d8" stop-opacity="0.85" />
+          </linearGradient>
+          <filter id="icon-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000" flood-opacity="0.1"/>
+          </filter>
+        </defs>
+        
+        <g transform="translate(50, 52)">
+          <g transform="rotate(0)">
+            <path d="M 0 0 C 28 -10, 18 -48, 0 -48 C -18 -48, -28 -10, 0 0 Z" fill="url(#pitta-grad)" stroke="#f4a261" stroke-width="1.5"/>
+            <g transform="translate(0, -27) scale(0.65) translate(-12, -12)" filter="url(#icon-shadow)">
+              <path d="M12 2c-3.5 0-6 4-6 9 0 4 3.5 11 6 11s6-7 6-11c0-5-2.5-9-6-9z" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 14c-1.5 0-2.5-1-2.5-2.5S10.5 9 12 9s2.5 1 2.5 2.5S13.5 14 12 14z" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+          </g>
+          
+          <g transform="rotate(120)">
+            <path d="M 0 0 C 28 -10, 18 -48, 0 -48 C -18 -48, -28 -10, 0 0 Z" fill="url(#kapha-grad)" stroke="#81c784" stroke-width="1.5"/>
+            <g transform="translate(0, -27) scale(0.65) translate(-12, -12)" filter="url(#icon-shadow)">
+              <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 12a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+          </g>
+          
+          <g transform="rotate(240)">
+            <path d="M 0 0 C 28 -10, 18 -48, 0 -48 C -18 -48, -28 -10, 0 0 Z" fill="url(#vata-grad)" stroke="#87c5d8" stroke-width="1.5"/>
+            <g transform="translate(0, -27) scale(0.65) translate(-12, -12)" filter="url(#icon-shadow)">
+              <path d="M12 3v18m0-18q-4 4-4 9t4 9m0-18q4 4 4 9t-4 9" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+          </g>
+          
+          <circle cx="0" cy="0" r="5" fill="#ffffff" stroke="#4a4a4a" stroke-width="1.5"/>
+          <circle cx="0" cy="0" r="1.5" fill="#4a4a4a"/>
+        </g>
       </svg>
     </div>
     <h1 id="title">Ayurvedic Dosha Quiz</h1>
@@ -549,7 +596,6 @@
   let selections = { prakruti: {}, vikruti: {} };
   let isSharedView = false;
 
-  // Scroll listener for dynamic progress bar shrink
   window.addEventListener('scroll', () => {
     const topBar = document.getElementById('sticky-top-bar');
     if (window.scrollY > 50) {
@@ -652,14 +698,6 @@
     return counts;
   }
 
-  function getProfileTextFormat(pRank, vRank) {
-    const textData = {
-      en: `My Ayurvedic Profile:\n\nConstitution (Prakruti):\nPrimary: ${capitalize(pRank[0])}\nSecondary: ${capitalize(pRank[1])}\nTertiary: ${capitalize(pRank[2])}\n\nCurrent Imbalance (Vikruti):\nPrimary: ${capitalize(vRank[0])}\nSecondary: ${capitalize(vRank[1])}\nTertiary: ${capitalize(vRank[2])}`,
-      vi: `Hồ sơ Ayurveda của tôi:\n\nThể tạng bẩm sinh (Prakruti):\nChính: ${capitalize(pRank[0])}\nPhụ: ${capitalize(pRank[1])}\nThứ ba: ${capitalize(pRank[2])}\n\nMất cân bằng hiện tại (Vikruti):\nChính: ${capitalize(vRank[0])}\nPhụ: ${capitalize(vRank[1])}\nThứ ba: ${capitalize(vRank[2])}`
-    };
-    return textData[currentLang];
-  }
-
   function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
@@ -667,6 +705,10 @@
   /* --- DISPLAY DASHBOARD --- */
   function displayDashboard(counts, isShared) {
     document.getElementById('submit-btn').style.display = 'none';
+    
+    const instr = document.getElementById('instructions');
+    if (instr) instr.style.display = 'none';
+    
     document.getElementById('progress-bar').style.width = '100%';
 
     let resultsHTML = `<div class="results-container">`;
@@ -856,8 +898,8 @@
     saveLocalData();
     isSharedView = false;
     document.getElementById('shared-banner').style.display = 'none';
-    document.getElementById('results').innerHTML = ''; // Clear results dashboard
-    window.history.replaceState({}, document.title, window.location.pathname); // Clear URL parameters
+    document.getElementById('results').innerHTML = ''; 
+    window.history.replaceState({}, document.title, window.location.pathname); 
     setLang(currentLang);
     window.scrollTo({top: 0, behavior: 'smooth'});
   }
@@ -866,7 +908,6 @@
     currentLang = lang;
     document.getElementById('title').innerText = translations[currentLang].title;
     
-    // Always show instructions, unless we explicitly hide them later
     const instr = document.getElementById('instructions');
     if(instr) {
       instr.innerHTML = translations[currentLang].instructions;
@@ -887,10 +928,8 @@
       banner.style.display = 'none';
     }
     
-    // Always build and display the quiz
     renderQuiz();
     
-    // If viewing a shared link OR if results were already visible, render the dashboard at the bottom
     if (isSharedView || document.getElementById('results').innerHTML.trim() !== '') {
       calculateResults(); 
     }
@@ -905,7 +944,6 @@
       selections[type][qId] = dosha;
     }
     
-    // If they edit a shared view, treat it as their own from now on
     isSharedView = false;
     document.getElementById('shared-banner').style.display = 'none';
     saveLocalData();
