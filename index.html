@@ -58,6 +58,40 @@
     0% { transform: translate(0, 0) scale(1); }
     100% { transform: translate(4%, 4%) scale(1.05); }
   }
+
+  /* Fixed Language Switch */
+  .fixed-lang-switch {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 200;
+    display: flex;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 40px;
+    padding: 5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255,255,255,1);
+  }
+  
+  .lang-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 1.3em;
+    transition: all 0.3s ease;
+    margin: 0;
+    filter: grayscale(100%) opacity(0.4);
+  }
+  
+  .lang-btn.active {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    filter: grayscale(0%) opacity(1);
+    transform: scale(1.05);
+  }
   
   .glass-container {
     background: var(--bg-glass);
@@ -72,8 +106,10 @@
     z-index: 1;
     display: flex;
     flex-direction: column;
+    margin-top: 20px; /* Offset for fixed language toggle */
   }
 
+  /* Shrinking Progress Bar */
   .sticky-top-bar {
     position: sticky;
     top: 15px;
@@ -83,12 +119,24 @@
     -webkit-backdrop-filter: blur(15px);
     border: 1px solid rgba(255,255,255,1);
     border-radius: 40px;
-    padding: 10px 15px;
+    padding: 15px 20px;
     margin-bottom: 30px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .sticky-top-bar.scrolled {
+    padding: 8px 15px;
+    margin-bottom: 15px;
+    top: 10px;
+    width: 50%; /* Shrinks width horizontally */
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.04);
   }
 
   .progress-container {
@@ -96,8 +144,12 @@
     height: 8px;
     background: rgba(0,0,0,0.05);
     border-radius: 10px;
-    margin-right: 20px;
     overflow: hidden;
+    transition: height 0.4s ease;
+  }
+
+  .sticky-top-bar.scrolled .progress-container {
+    height: 4px; /* Thinner line when scrolling */
   }
 
   .progress-bar {
@@ -106,35 +158,6 @@
     width: 0%;
     transition: width 0.4s ease;
     border-radius: 10px;
-  }
-  
-  .lang-switch {
-    display: flex;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 40px;
-    padding: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-    border: 1px solid #eee;
-    flex-shrink: 0;
-  }
-  
-  .lang-btn {
-    background: transparent;
-    color: #999;
-    border: none;
-    padding: 6px 16px;
-    border-radius: 30px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 1.8em;
-    transition: all 0.3s ease;
-    margin: 0;
-  }
-  
-  .lang-btn.active {
-    background: #fff;
-    color: #333;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
   }
   
   .header-section {
@@ -395,11 +418,26 @@
   @media (max-width: 768px) {
     body { padding: 10px; }
     
+    .fixed-lang-switch {
+      top: 15px;
+      right: 15px;
+      padding: 3px;
+    }
+    .lang-btn {
+      padding: 6px 10px;
+      font-size: 1.1em;
+    }
+
     .glass-container {
       padding: 20px 10px;
       border-radius: 20px;
+      margin-top: 40px; /* Leave space for language switch */
     }
     
+    .sticky-top-bar.scrolled {
+      width: 85%; /* Don't shrink quite as much on mobile */
+    }
+
     h1 { font-size: 1.6em; }
     
     .question-block {
@@ -474,21 +512,22 @@
   <div class="blob kapha-bg"></div>
 </div>
 
+<div class="fixed-lang-switch">
+  <button class="lang-btn active" id="btn-en" onclick="setLang('en')" title="English">🇬🇧</button>
+  <button class="lang-btn" id="btn-vi" onclick="setLang('vi')" title="Tiếng Việt">🇻🇳</button>
+</div>
+
 <div class="glass-container">
   
-  <div class="sticky-top-bar">
+  <div class="sticky-top-bar" id="sticky-top-bar">
     <div class="progress-container">
       <div class="progress-bar" id="progress-bar"></div>
-    </div>
-    <div class="lang-switch">
-      <button class="lang-btn active" id="btn-en" onclick="setLang('en')">🇬🇧</button>
-      <button class="lang-btn" id="btn-vi" onclick="setLang('vi')">🇻🇳</button>
     </div>
   </div>
   
   <div class="header-section" id="header-section">
     <div class="logo-container">
-      <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z" stroke-dasharray="2 2"/>
         <circle cx="12" cy="12" r="2" fill="currentColor"/>
@@ -509,6 +548,16 @@
   let currentLang = 'en';
   let selections = { prakruti: {}, vikruti: {} };
   let isSharedView = false;
+
+  // Scroll listener for dynamic progress bar shrink
+  window.addEventListener('scroll', () => {
+    const topBar = document.getElementById('sticky-top-bar');
+    if (window.scrollY > 50) {
+      topBar.classList.add('scrolled');
+    } else {
+      topBar.classList.remove('scrolled');
+    }
+  });
   
   const translations = {
     en: { 
@@ -816,7 +865,14 @@
   function setLang(lang) {
     currentLang = lang;
     document.getElementById('title').innerText = translations[currentLang].title;
-    document.getElementById('instructions').innerHTML = translations[currentLang].instructions;
+    
+    // Always show instructions, unless we explicitly hide them later
+    const instr = document.getElementById('instructions');
+    if(instr) {
+      instr.innerHTML = translations[currentLang].instructions;
+      instr.style.display = 'block'; 
+    }
+    
     document.getElementById('submit-btn').innerText = translations[currentLang].submit;
     
     document.getElementById('btn-en').classList.remove('active');
@@ -910,7 +966,7 @@
                   <div class="selection-label">${label}</div>
                   <div class="selection-buttons">`;
         ['vata', 'pitta', 'kapha'].forEach(dosha => {
-          const isSelected = selections[type][q.id] === dosha ? 'selected' : '';
+          const isSelected = (selections[type] && selections[type][q.id] === dosha) ? 'selected' : '';
           html += `<button class="sel-btn ${dosha} ${isSelected}" data-qid="${q.id}" data-type="${type}" data-dosha="${dosha}" onclick="selectOption('${type}', '${q.id}', '${dosha}')">${translations[currentLang][dosha]}</button>`;
         });
         html += `</div></div>`;
