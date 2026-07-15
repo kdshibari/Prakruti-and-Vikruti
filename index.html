@@ -579,15 +579,16 @@
         <div class="blob kapha-bg"></div>
     </div>
 
+    <div class="fixed-lang-switch">
+        <button class="lang-btn active" id="btn-en" onclick="setLang('en')" title="English">🇬🇧</button>
+        <button class="lang-btn" id="btn-vi" onclick="setLang('vi')" title="Tiếng Việt">🇻🇳</button>
+    </div>
+
     <div class="glass-container">
 
         <div class="sticky-top-bar" id="sticky-top-bar">
             <div class="progress-container">
                 <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            <div class="lang-switch">
-                <button class="lang-btn active" id="btn-en" onclick="setLang('en')" title="English">🇬🇧</button>
-                <button class="lang-btn" id="btn-vi" onclick="setLang('vi')" title="Tiếng Việt">🇻🇳</button>
             </div>
         </div>
 
@@ -644,6 +645,10 @@
             <h1 id="title">Ayurvedic Dosha Quiz</h1>
             <div class="shared-banner" id="shared-banner"></div>
             <div class="instruction-box" id="instructions"></div>
+            
+            <div class="name-input-section" id="name-section">
+                <input type="text" id="user-name" class="name-input" oninput="saveName(this.value)">
+            </div>
         </div>
 
         <div id="quiz-content"></div>
@@ -655,6 +660,7 @@
     <script>
         let currentLang = 'en';
         let selections = {
+            name: "",
             prakruti: {},
             vikruti: {}
         };
@@ -673,48 +679,28 @@
             en: {
                 title: "Prakruti and Vikruti Quiz",
                 instructions: "<strong>Instructions:</strong> Choose the column that matches you historically (Long Term), and the column for current imbalances (Present). You do not need to select an option for every question if unsure.",
+                namePlaceholder: "Enter your name (optional)",
                 submit: "Reveal My Dosha",
-                vata: "Vata",
-                pitta: "Pitta",
-                kapha: "Kapha",
-                longTerm: "Long Term (Prakruti):",
-                present: "Present (Vikruti):",
-                resultsLongTerm: "Prakruti (Long Term)",
-                resultsPresent: "Vikruti (Current)",
-                rank: "Rank",
-                primary: "Primary",
-                secondary: "Secondary",
-                tertiary: "Tertiary",
-                dashboardTitle: "Final Dosha Designation",
-                constPrakruti: "Constitution",
-                copyProfile: "Copy Link",
-                shareProfile: "Share Profile",
-                resetQuiz: "Clear & Restart",
-                takeQuiz: "Take the Quiz",
+                vata: "Vata", pitta: "Pitta", kapha: "Kapha",
+                longTerm: "Long Term (Prakruti):", present: "Present (Vikruti):",
+                resultsLongTerm: "Prakruti (Long Term)", resultsPresent: "Vikruti (Current)",
+                rank: "Rank", primary: "Primary", secondary: "Secondary", tertiary: "Tertiary",
+                dashboardTitle: "Final Dosha Designation", constPrakruti: "Constitution",
+                copyProfile: "Copy Link", shareProfile: "Share Profile", resetQuiz: "Clear & Restart", takeQuiz: "Take the Quiz",
                 sharedMsg: "You are viewing a shared Dosha profile. You can scroll through the quiz to see the answers.",
                 copied: "Copied!"
             },
             vi: {
                 title: "Bảng Câu Hỏi Thể Tạng",
                 instructions: "<strong>Hướng dẫn:</strong> Chọn khuynh hướng phù hợp với bạn từ trước đến nay (Lâu dài), và chọn cho hiện tại nếu mất cân bằng. Có thể bỏ trống nếu không chắc chắn.",
+                namePlaceholder: "Nhập tên của bạn (tùy chọn)",
                 submit: "Xem Kết Quả",
-                vata: "Vata",
-                pitta: "Pitta",
-                kapha: "Kapha",
-                longTerm: "Lâu dài (Prakruti):",
-                present: "Hiện tại (Vikruti):",
-                resultsLongTerm: "Prakruti (Lâu dài)",
-                resultsPresent: "Vikruti (Hiện tại)",
-                rank: "Hạng",
-                primary: "Chính",
-                secondary: "Phụ",
-                tertiary: "Thứ 3",
-                dashboardTitle: "Phân Loại Thể Tạng",
-                constPrakruti: "Prakruti",
-                copyProfile: "Sao chép link",
-                shareProfile: "Chia sẻ",
-                resetQuiz: "Làm lại từ đầu",
-                takeQuiz: "Làm Bài Trắc Nghiệm",
+                vata: "Vata", pitta: "Pitta", kapha: "Kapha",
+                longTerm: "Lâu dài (Prakruti):", present: "Hiện tại (Vikruti):",
+                resultsLongTerm: "Prakruti (Lâu dài)", resultsPresent: "Vikruti (Hiện tại)",
+                rank: "Hạng", primary: "Chính", secondary: "Phụ", tertiary: "Thứ 3",
+                dashboardTitle: "Phân Loại Thể Tạng", constPrakruti: "Prakruti",
+                copyProfile: "Sao chép link", shareProfile: "Chia sẻ", resetQuiz: "Làm lại từ đầu", takeQuiz: "Làm Bài Trắc Nghiệm",
                 sharedMsg: "Bạn đang xem hồ sơ Thể tạng được chia sẻ. Bạn có thể điều chỉnh các câu trả lời bên dưới.",
                 copied: "Đã sao chép!"
             }
@@ -730,498 +716,67 @@
         const copyIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
         const resetIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>`;
 
-        const questions = [{
-                id: "face",
-                en: {
-                    trait: "Face",
-                    vata: "Oblong, oval, narrow, thin, asymmetry, prominent bone structure",
-                    pitta: "Angular, muscular, defined features, rectangular, wider forehead, stronger, heart shaped",
-                    kapha: "Round, wide, oval, moon, pear shaped, fleshier, chin wider than forehead"
-                },
-                vi: {
-                    trait: "Gương mặt",
-                    vata: "Dài, bầu dục, hẹp, gầy, hơi bất đối xứng, cấu trúc xương nổi rõ",
-                    pitta: "Góc cạnh, hoặc cơ bắp, đường nét rõ, hình chữ nhật hoặc hình trái tim, trán rộng",
-                    kapha: "Tròn, rộng, bầu dục, hình mặt trăng hoặc quả lê, đầy đặn hơn, cằm thường rộng hơn trán"
-                }
-            },
-            {
-                id: "eyes",
-                en: {
-                    trait: "Eyes",
-                    vata: "Smaller, darting eyes, grey, dark blue, dark brown, sunken, sclera gray or dull, irregularity, swollen just beneath eye",
-                    pitta: "Medium, almond shaped, deep set, piercing, sharp, blue, green, glowing, clear, bright sclera, red or yellow sclera, bulging eyeballs",
-                    kapha: "Larger, warm pools, brown, swan like, soft gaze, moist, watery, swelling under eyes, bright white sclera, calm"
-                },
-                vi: {
-                    trait: "Mắt",
-                    vata: "Mắt nhỏ, đảo nhanh, trũng sâu, lòng trắng mắt xám hoặc xỉn màu, không đều, hơi sưng ngay bên dưới mắt",
-                    pitta: "Mắt cỡ trung bình, hình hạnh nhân, sâu, ánh nhìn sắc, xuyên thấu, sáng, trong, lòng trắng mắt sáng rõ, đôi khi đỏ hoặc vàng, mắt hơi lồi",
-                    kapha: "Mắt to, ấm áp như mặt nước, màu nâu, dáng mắt dài mềm mại, ánh nhìn dịu dàng, ẩm hoặc long lanh, có thể sưng nhẹ dưới mắt, lòng trắng trắng sáng, vẻ điềm tĩnh"
-                }
-            },
-            {
-                id: "brows",
-                en: {
-                    trait: "Eyebrows / Lashes",
-                    vata: "Thin and sparse",
-                    pitta: "Average thickness, blonde, reddish finer hair",
-                    kapha: "Wide, thick, unibrow"
-                },
-                vi: {
-                    trait: "Lông mày / lông mi",
-                    vata: "Mảnh và thưa",
-                    pitta: "Độ dày trung bình, lông mảnh",
-                    kapha: "Bản rộng, rậm, dày, lông mày liền nhau"
-                }
-            },
-            {
-                id: "nose",
-                en: {
-                    trait: "Nose",
-                    vata: "Small, long and narrow, irregular, crooked, deviated septum, narrow bridge, less fleshy, dry",
-                    pitta: "Medium, medium bridge, bulbous tip, pointy nose",
-                    kapha: "Large and/or short and rounded, wide bridge, thicker, more spread out on face, wider"
-                },
-                vi: {
-                    trait: "Mũi",
-                    vata: "Nhỏ, dài và hẹp, không đều hoặc hơi lệch, vách ngăn mũi lệch, sống mũi hẹp, ít thịt, khô",
-                    pitta: "Mũi có kích thước trung bình, sống mũi vừa phải, chóp mũi bầu tròn, và dáng mũi hơi nhọn",
-                    kapha: "To hoặc ngắn, tròn, sống mũi rộng, dày hơn, chiếm diện tích rộng hơn trên khuôn mặt"
-                }
-            },
-            {
-                id: "lips",
-                en: {
-                    trait: "Lips",
-                    vata: "Thin, narrow, dry, pale, irregular, drooping, sagging jowls, asymmetrical smile, potential browning",
-                    pitta: "Medium, more pink/red, heat imbalances, puckered/pursed",
-                    kapha: "Full, wide, smooth, juicy"
-                },
-                vi: {
-                    trait: "Môi",
-                    vata: "Mỏng, hẹp, khô, nhợt nhạt, không đều, khóe môi trễ xuống, vùng hàm dưới chảy xệ, nụ cười không cân xứng, có thể sạm nâu",
-                    pitta: "Kích thước trung bình, hồng đỏ hơn, có xu hướng mất cân bằng do nhiệt, môi chúm hoặc mím chặt",
-                    kapha: "Đầy, rộng, mịn, mọng nước, môi khô bong tróc có thể gợi ý nhiễm nấm"
-                }
-            },
-            {
-                id: "hair",
-                en: {
-                    trait: "Hair",
-                    vata: "Dry, frizzy, lacking luster, thin, scanty, coarse",
-                    pitta: "Light blonde, brown or red hair, moderate to fine, oily, early gray, straight",
-                    kapha: "Thick, curly/wavy, lustrous, full, smooth, dark"
-                },
-                vi: {
-                    trait: "Tóc",
-                    vata: "Khô, xù, thiếu độ bóng, mảnh, thưa, sợi tóc thô cứng",
-                    pitta: "Sợi tóc từ vừa đến mảnh, dễ bết dầu, bạc sớm, tóc thẳng",
-                    kapha: "Dày, xoăn hoặc gợn sóng, bóng khỏe, nhiều tóc, mềm mượt, màu sẫm"
-                }
-            },
-            {
-                id: "complexion",
-                en: {
-                    trait: "Skin on face / complexion",
-                    vata: "Thin, dry, cold, rough, dull",
-                    pitta: "Rosy, warm, oily",
-                    kapha: "Pale, smooth, thick, cool"
-                },
-                vi: {
-                    trait: "Da mặt / Nước da",
-                    vata: "Mỏng, khô, lạnh, thô ráp, xỉn màu",
-                    pitta: "Hồng hào, ấm, dễ nhờn dầu",
-                    kapha: "Nhợt nhạt, mịn, dày, mát"
-                }
-            },
-            {
-                id: "body_skin",
-                en: {
-                    trait: "Skin of the body",
-                    vata: "Dry, cracking, translucent, thin, loose skin, light",
-                    pitta: "Fair skin, freckles, delicate, may have many moles",
-                    kapha: "Thick, oily, creamy, soft to the touch"
-                },
-                vi: {
-                    trait: "Da toàn thân",
-                    vata: "Khô, nứt nẻ, hơi trong, mỏng, da lỏng, sắc da sáng",
-                    pitta: "Da sáng, có tàn nhang, da nhạy cảm, có thể có nhiều nốt ruồi",
-                    kapha: "Dày, nhờn dầu, mịn như kem, mềm khi chạm"
-                }
-            },
-            {
-                id: "neck",
-                en: {
-                    trait: "Neck",
-                    vata: "Long, thin",
-                    pitta: "Medium, strong",
-                    kapha: "Short, wide"
-                },
-                vi: {
-                    trait: "Cổ",
-                    vata: "Dài, mảnh",
-                    pitta: "Trung bình, khỏe",
-                    kapha: "Ngắn, rộng"
-                }
-            },
-            {
-                id: "fingers",
-                en: {
-                    trait: "Fingers",
-                    vata: "Long, thin, prominent knuckles",
-                    pitta: "Medium, tapered",
-                    kapha: "Short, fleshy"
-                },
-                vi: {
-                    trait: "Ngón tay",
-                    vata: "Dài, mảnh, khớp ngón tay nổi rõ",
-                    pitta: "Trung bình, thuôn dần ở đầu ngón",
-                    kapha: "Ngắn, đầy thịt"
-                }
-            },
-            {
-                id: "nails",
-                en: {
-                    trait: "Nails",
-                    vata: "Dry, brittle, striated, thin",
-                    pitta: "Pink, flexible",
-                    kapha: "Thick, smooth"
-                },
-                vi: {
-                    trait: "Móng tay",
-                    vata: "Khô, giòn, có rãnh sọc, mỏng",
-                    pitta: "Hồng, mềm dẻo",
-                    kapha: "Dày, mịn"
-                }
-            },
-            {
-                id: "palms",
-                en: {
-                    trait: "Palms",
-                    vata: "Rectangular",
-                    pitta: "Square",
-                    kapha: "Square and fleshy"
-                },
-                vi: {
-                    trait: "Lòng bàn tay",
-                    vata: "Hình chữ nhật",
-                    pitta: "Hình vuông",
-                    kapha: "Hình vuông, đầy đặn"
-                }
-            },
-            {
-                id: "teeth",
-                en: {
-                    trait: "Teeth",
-                    vata: "Crooked, grey, thin gums",
-                    pitta: "Yellow, sharp",
-                    kapha: "Strong, straight, white"
-                },
-                vi: {
-                    trait: "Răng",
-                    vata: "Lệch, xám, nướu mỏng",
-                    pitta: "Vàng, sắc nhọn",
-                    kapha: "Chắc khỏe, thẳng, trắng"
-                }
-            },
-            {
-                id: "weight",
-                en: {
-                    trait: "Weight",
-                    vata: "Light, hard to gain",
-                    pitta: "Moderate, can gain or lose easily",
-                    kapha: "Heavy, hard to lose"
-                },
-                vi: {
-                    trait: "Cân nặng",
-                    vata: "Nhẹ, khó tăng cân",
-                    pitta: "Trung bình, dễ tăng hoặc giảm cân",
-                    kapha: "Nặng, khó giảm cân"
-                }
-            },
-            {
-                id: "bodytype",
-                en: {
-                    trait: "Body Type",
-                    vata: "Slight, ectomorph",
-                    pitta: "Average, mesomorph",
-                    kapha: "Sturdy, endomorph"
-                },
-                vi: {
-                    trait: "Thể hình",
-                    vata: "Mảnh, khung xương nhỏ, tay chân dài",
-                    pitta: "Trung bình, vóc dáng cân đối",
-                    kapha: "Vững chắc, dáng đầy đặn, khung xương lớn"
-                }
-            },
-            {
-                id: "appetite",
-                en: {
-                    trait: "Appetite",
-                    vata: "Variable. May skip meals. May get anxious, dizzy.",
-                    pitta: "Strong. Often hungry. Skipping meals makes you hangry.",
-                    kapha: "Consistently low. Undisturbed by missing a meal."
-                },
-                vi: {
-                    trait: "Cảm giác thèm ăn",
-                    vata: "Thay đổi thất thường. Có thể bỏ bữa. Dễ lo âu, chóng mặt.",
-                    pitta: "Mạnh. Thường hay đói. Ít khi bỏ bữa vì dễ cáu gắt.",
-                    kapha: "Thấp và ổn định. Không bị ảnh hưởng khi bỏ bữa."
-                }
-            },
-            {
-                id: "digestion",
-                en: {
-                    trait: "Digestion",
-                    vata: "Tends toward gas, constipation or bloating.",
-                    pitta: "Tends toward loose stool, diarrhea or burning.",
-                    kapha: "Tends to feel heavy after eating."
-                },
-                vi: {
-                    trait: "Tiêu hoá",
-                    vata: "Có xu hướng đầy hơi, táo bón hoặc chướng bụng.",
-                    pitta: "Có xu hướng phân lỏng, tiêu chảy hoặc nóng rát.",
-                    kapha: "Có xu hướng cảm thấy nặng bụng sau khi ăn."
-                }
-            },
-            {
-                id: "elimination",
-                en: {
-                    trait: "Elimination",
-                    vata: "Stool may be hard or dry, strain to eliminate and skip days.",
-                    pitta: "Stool may be loose or unformed and may burn. May go 2 to 3x per day.",
-                    kapha: "Stool may be large, thick, and sluggish. May take some time to go."
-                },
-                vi: {
-                    trait: "Đi tiêu",
-                    vata: "Phân cứng hoặc khô, phải rặn, bỏ qua vài ngày không đi.",
-                    pitta: "Phân lỏng, có thể gây nóng rát. Đi tiêu nhiều lần trong ngày.",
-                    kapha: "Phân to, đặc, chậm ra, có thể nhờn dầu. Mất thời gian để đi tiêu."
-                }
-            },
-            {
-                id: "sleep",
-                en: {
-                    trait: "Sleep",
-                    vata: "Difficulty falling asleep, light sleeper, broken up, nonsensical thoughts in night.",
-                    pitta: "Easy to fall asleep, sleeps soundly, may wake with excess heat or thoughts of tasks.",
-                    kapha: "Difficulty waking, deep sleep, prolonged sleep."
-                },
-                vi: {
-                    trait: "Ngủ",
-                    vata: "Khó ngủ, ngủ nông, giấc ngủ gián đoạn, suy nghĩ lan man khi thức.",
-                    pitta: "Dễ ngủ, ngủ sâu. Có thể thức vì quá nóng hoặc nghĩ việc cần làm.",
-                    kapha: "Khó thức dậy, ngủ sâu, thời gian ngủ kéo dài."
-                }
-            },
-            {
-                id: "activity",
-                en: {
-                    trait: "Physical Activity",
-                    vata: "Hyperactive, may prefer excess energy exertion",
-                    pitta: "Moderate, competitive, may crave heated practices",
-                    kapha: "Slow, hard to get going"
-                },
-                vi: {
-                    trait: "Hoạt động thể chất",
-                    vata: "Hiếu động, thích vận động tiêu hao nhiều năng lượng",
-                    pitta: "Mức độ vừa phải, tính cạnh tranh, thích tập luyện tạo nhiệt",
-                    kapha: "Chậm, khó bắt đầu vận động"
-                }
-            },
-            {
-                id: "temp",
-                en: {
-                    trait: "Temperature",
-                    vata: "Tends to feeling cold, cold hand and feet",
-                    pitta: "Tends to feeling warm",
-                    kapha: "Maintains stable temperature"
-                },
-                vi: {
-                    trait: "Nhiệt độ cơ thể",
-                    vata: "Có xu hướng cảm thấy lạnh, tay chân lạnh",
-                    pitta: "Có xu hướng cảm thấy ấm hoặc nóng",
-                    kapha: "Duy trì nhiệt độ cơ thể ổn định"
-                }
-            },
-            {
-                id: "sweat",
-                en: {
-                    trait: "Sweat",
-                    vata: "Minimal to no sweat",
-                    pitta: "Sweats easily with exertion, may have pungent odor",
-                    kapha: "Sweats easily with exertion, may have sweet odor"
-                },
-                vi: {
-                    trait: "Mồ hôi",
-                    vata: "Ít hoặc hầu như không ra mồ hôi",
-                    pitta: "Dễ đổ mồ hôi khi gắng sức, có thể có mùi hăng",
-                    kapha: "Dễ đổ mồ hôi, có thể có mùi ngọt"
-                }
-            },
-            {
-                id: "urine",
-                en: {
-                    trait: "Urination",
-                    vata: "May be scanty, may be excessive, no odor",
-                    pitta: "May have pungent odor",
-                    kapha: "May have sweet odor"
-                },
-                vi: {
-                    trait: "Tiểu tiện",
-                    vata: "Tiểu ít hoặc nhiều, thường không mùi",
-                    pitta: "Nước tiểu có thể có mùi hăng",
-                    kapha: "Nước tiểu có thể có mùi ngọt"
-                }
-            },
-            {
-                id: "menses",
-                en: {
-                    trait: "Menses",
-                    vata: "Light, irregular",
-                    pitta: "Medium to heavy, 3 to 5 days, regular",
-                    kapha: "Heavier, 5 to 7 days, regular"
-                },
-                vi: {
-                    trait: "Kinh nguyệt",
-                    vata: "Ít, không đều",
-                    pitta: "Lượng vừa đến nhiều, đều, 3 đến 5 ngày",
-                    kapha: "Lượng nhiều hơn, đều, 5 đến 7 ngày"
-                }
-            },
-            {
-                id: "personality",
-                en: {
-                    trait: "Personality",
-                    vata: "Butterfly, creative, enthusiastic, vivacious",
-                    pitta: "Bull, perceptive, disciplined, logical",
-                    kapha: "Turtle, nurturing, calm, devotional"
-                },
-                vi: {
-                    trait: "Tính cách",
-                    vata: "Như bươm bướm, sáng tạo, nhiệt tình, hoạt bát",
-                    pitta: "Như bò mộng, nhạy bén, kỷ luật, logic",
-                    kapha: "Như rùa, nuôi dưỡng, điềm tĩnh, tận tâm"
-                }
-            },
-            {
-                id: "mental",
-                en: {
-                    trait: "Mental Activity",
-                    vata: "Hyperactive, overthinking, variable, scattered thoughts, difficulty making decisions",
-                    pitta: "Moderate, steady, goal oriented, makes decisions easily",
-                    kapha: "Dull, slow, methodical, careful but easy going about decisions"
-                },
-                vi: {
-                    trait: "Hoạt động tinh thần",
-                    vata: "Quá năng động, suy nghĩ nhiều, phân tán, khó đưa ra quyết định",
-                    pitta: "Vừa phải, ổn định, hướng đến mục tiêu, dễ đưa ra quyết định",
-                    kapha: "Chậm chạp, có phương pháp, thoải mái khi quyết định"
-                }
-            },
-            {
-                id: "stress",
-                en: {
-                    trait: "Reaction to Stress",
-                    vata: "Overwhelm, worry",
-                    pitta: "Irritable, but usually rise to the challenge",
-                    kapha: "Withdrawal, reclusive"
-                },
-                vi: {
-                    trait: "Phản ứng với căng thẳng",
-                    vata: "Choáng ngợp, lo lắng",
-                    pitta: "Dễ cáu kỉnh nhưng có khả năng vượt qua thử thách",
-                    kapha: "Thu mình, có xu hướng tách biệt"
-                }
-            },
-            {
-                id: "emotions",
-                en: {
-                    trait: "Emotions",
-                    vata: "Anxiety, fear, uncertainty",
-                    pitta: "Anger, hate, jealousy",
-                    kapha: "Calm, greedy, attachment"
-                },
-                vi: {
-                    trait: "Cảm xúc",
-                    vata: "Lo âu, sợ hãi, bất an",
-                    pitta: "Giận dữ, ghét bỏ, ghen tị",
-                    kapha: "Bình tĩnh, tham lam, bám chấp"
-                }
-            },
-            {
-                id: "intellect",
-                en: {
-                    trait: "Intellect",
-                    vata: "Quick but faulty response, answering without fully thinking",
-                    pitta: "Sharp, accurate response, quick, witty",
-                    kapha: "Slow, exact, thoughtful, mindful, steady"
-                },
-                vi: {
-                    trait: "Trí tuệ / cách tư duy",
-                    vata: "Phản ứng nhanh nhưng thiếu chính xác, trả lời khi chưa suy nghĩ kỹ",
-                    pitta: "Sắc bén, chính xác, nhanh trí, hóm hỉnh",
-                    kapha: "Chậm, chính xác, sâu sắc, chú tâm, ổn định"
-                }
-            },
-            {
-                id: "dreams",
-                en: {
-                    trait: "Dreams",
-                    vata: "Quick, active, many, fearful, no real focus",
-                    pitta: "Fiery, war, violence, task oriented",
-                    kapha: "Lakes, snow, romantic, lazy, no dreams"
-                },
-                vi: {
-                    trait: "Giấc mơ",
-                    vata: "Nhanh, nhiều hoạt động, mang tính sợ hãi, không có chủ đề rõ",
-                    pitta: "Có lửa, chiến tranh, bạo lực hoặc xoay quanh công việc",
-                    kapha: "Hồ nước, tuyết, lãng mạn, lười biếng, ít nhớ giấc mơ"
-                }
-            },
-            {
-                id: "speech",
-                en: {
-                    trait: "Speech",
-                    vata: "Rapid, unclear, airy, anxious",
-                    pitta: "Sharp, penetrating, convincing",
-                    kapha: "Slow, monotonous, soothing"
-                },
-                vi: {
-                    trait: "Cách nói",
-                    vata: "Nhanh, không rõ ràng, nhẹ thoáng, có vẻ lo âu",
-                    pitta: "Sắc, thuyết phục, có sức xuyên thấu",
-                    kapha: "Chậm, đều đều, dịu và tạo cảm giác xoa dịu"
-                }
-            }
+        const questions = [
+            { id: "face", en: { trait: "Face", vata: "Oblong, oval, narrow, thin, asymmetry, prominent bone structure", pitta: "Angular, muscular, defined features, rectangular, wider forehead, stronger, heart shaped", kapha: "Round, wide, oval, moon, pear shaped, fleshier, chin wider than forehead" }, vi: { trait: "Gương mặt", vata: "Dài, bầu dục, hẹp, gầy, hơi bất đối xứng, cấu trúc xương nổi rõ", pitta: "Góc cạnh, hoặc cơ bắp, đường nét rõ, hình chữ nhật hoặc hình trái tim, trán rộng", kapha: "Tròn, rộng, bầu dục, hình mặt trăng hoặc quả lê, đầy đặn hơn, cằm thường rộng hơn trán" } },
+            { id: "eyes", en: { trait: "Eyes", vata: "Smaller, darting eyes, grey, dark blue, dark brown, sunken, sclera gray or dull, irregularity, swollen just beneath eye", pitta: "Medium, almond shaped, deep set, piercing, sharp, blue, green, glowing, clear, bright sclera, red or yellow sclera, bulging eyeballs", kapha: "Larger, warm pools, brown, swan like, soft gaze, moist, watery, swelling under eyes, bright white sclera, calm" }, vi: { trait: "Mắt", vata: "Mắt nhỏ, đảo nhanh, trũng sâu, lòng trắng mắt xám hoặc xỉn màu, không đều, hơi sưng ngay bên dưới mắt", pitta: "Mắt cỡ trung bình, hình hạnh nhân, sâu, ánh nhìn sắc, xuyên thấu, sáng, trong, lòng trắng mắt sáng rõ, đôi khi đỏ hoặc vàng, mắt hơi lồi", kapha: "Mắt to, ấm áp như mặt nước, màu nâu, dáng mắt dài mềm mại, ánh nhìn dịu dàng, ẩm hoặc long lanh, có thể sưng nhẹ dưới mắt, lòng trắng trắng sáng, vẻ điềm tĩnh" } },
+            { id: "brows", en: { trait: "Eyebrows / Lashes", vata: "Thin and sparse", pitta: "Average thickness, blonde, reddish finer hair", kapha: "Wide, thick, unibrow" }, vi: { trait: "Lông mày / lông mi", vata: "Mảnh và thưa", pitta: "Độ dày trung bình, lông mảnh", kapha: "Bản rộng, rậm, dày, lông mày liền nhau" } },
+            { id: "nose", en: { trait: "Nose", vata: "Small, long and narrow, irregular, crooked, deviated septum, narrow bridge, less fleshy, dry", pitta: "Medium, medium bridge, bulbous tip, pointy nose", kapha: "Large and/or short and rounded, wide bridge, thicker, more spread out on face, wider" }, vi: { trait: "Mũi", vata: "Nhỏ, dài và hẹp, không đều hoặc hơi lệch, vách ngăn mũi lệch, sống mũi hẹp, ít thịt, khô", pitta: "Mũi có kích thước trung bình, sống mũi vừa phải, chóp mũi bầu tròn, và dáng mũi hơi nhọn", kapha: "To hoặc ngắn, tròn, sống mũi rộng, dày hơn, chiếm diện tích rộng hơn trên khuôn mặt" } },
+            { id: "lips", en: { trait: "Lips", vata: "Thin, narrow, dry, pale, irregular, drooping, sagging jowls, asymmetrical smile, potential browning", pitta: "Medium, more pink/red, heat imbalances, puckered/pursed", kapha: "Full, wide, smooth, juicy" }, vi: { trait: "Môi", vata: "Mỏng, hẹp, khô, nhợt nhạt, không đều, khóe môi trễ xuống, vùng hàm dưới chảy xệ, nụ cười không cân xứng, có thể sạm nâu", pitta: "Kích thước trung bình, hồng đỏ hơn, có xu hướng mất cân bằng do nhiệt, môi chúm hoặc mím chặt", kapha: "Đầy, rộng, mịn, mọng nước, môi khô bong tróc có thể gợi ý nhiễm nấm" } },
+            { id: "hair", en: { trait: "Hair", vata: "Dry, frizzy, lacking luster, thin, scanty, coarse", pitta: "Light blonde, brown or red hair, moderate to fine, oily, early gray, straight", kapha: "Thick, curly/wavy, lustrous, full, smooth, dark" }, vi: { trait: "Tóc", vata: "Khô, xù, thiếu độ bóng, mảnh, thưa, sợi tóc thô cứng", pitta: "Sợi tóc từ vừa đến mảnh, dễ bết dầu, bạc sớm, tóc thẳng", kapha: "Dày, xoăn hoặc gợn sóng, bóng khỏe, nhiều tóc, mềm mượt, màu sẫm" } },
+            { id: "complexion", en: { trait: "Skin on face / complexion", vata: "Thin, dry, cold, rough, dull", pitta: "Rosy, warm, oily", kapha: "Pale, smooth, thick, cool" }, vi: { trait: "Da mặt / Nước da", vata: "Mỏng, khô, lạnh, thô ráp, xỉn màu", pitta: "Hồng hào, ấm, dễ nhờn dầu", kapha: "Nhợt nhạt, mịn, dày, mát" } },
+            { id: "body_skin", en: { trait: "Skin of the body", vata: "Dry, cracking, translucent, thin, loose skin, light", pitta: "Fair skin, freckles, delicate, may have many moles", kapha: "Thick, oily, creamy, soft to the touch" }, vi: { trait: "Da toàn thân", vata: "Khô, nứt nẻ, hơi trong, mỏng, da lỏng, sắc da sáng", pitta: "Da sáng, có tàn nhang, da nhạy cảm, có thể có nhiều nốt ruồi", kapha: "Dày, nhờn dầu, mịn như kem, mềm khi chạm" } },
+            { id: "neck", en: { trait: "Neck", vata: "Long, thin", pitta: "Medium, strong", kapha: "Short, wide" }, vi: { trait: "Cổ", vata: "Dài, mảnh", pitta: "Trung bình, khỏe", kapha: "Ngắn, rộng" } },
+            { id: "fingers", en: { trait: "Fingers", vata: "Long, thin, prominent knuckles", pitta: "Medium, tapered", kapha: "Short, fleshy" }, vi: { trait: "Ngón tay", vata: "Dài, mảnh, khớp ngón tay nổi rõ", pitta: "Trung bình, thuôn dần ở đầu ngón", kapha: "Ngắn, đầy thịt" } },
+            { id: "nails", en: { trait: "Nails", vata: "Dry, brittle, striated, thin", pitta: "Pink, flexible", kapha: "Thick, smooth" }, vi: { trait: "Móng tay", vata: "Khô, giòn, có rãnh sọc, mỏng", pitta: "Hồng, mềm dẻo", kapha: "Dày, mịn" } },
+            { id: "palms", en: { trait: "Palms", vata: "Rectangular", pitta: "Square", kapha: "Square and fleshy" }, vi: { trait: "Lòng bàn tay", vata: "Hình chữ nhật", pitta: "Hình vuông", kapha: "Hình vuông, đầy đặn" } },
+            { id: "teeth", en: { trait: "Teeth", vata: "Crooked, grey, thin gums", pitta: "Yellow, sharp", kapha: "Strong, straight, white" }, vi: { trait: "Răng", vata: "Lệch, xám, nướu mỏng", pitta: "Vàng, sắc nhọn", kapha: "Chắc khỏe, thẳng, trắng" } },
+            { id: "weight", en: { trait: "Weight", vata: "Light, hard to gain", pitta: "Moderate, can gain or lose easily", kapha: "Heavy, hard to lose" }, vi: { trait: "Cân nặng", vata: "Nhẹ, khó tăng cân", pitta: "Trung bình, dễ tăng hoặc giảm cân", kapha: "Nặng, khó giảm cân" } },
+            { id: "bodytype", en: { trait: "Body Type", vata: "Slight, ectomorph", pitta: "Average, mesomorph", kapha: "Sturdy, endomorph" }, vi: { trait: "Thể hình", vata: "Mảnh, khung xương nhỏ, tay chân dài", pitta: "Trung bình, vóc dáng cân đối", kapha: "Vững chắc, dáng đầy đặn, khung xương lớn" } },
+            { id: "appetite", en: { trait: "Appetite", vata: "Variable. May skip meals. May get anxious, dizzy.", pitta: "Strong. Often hungry. Skipping meals makes you hangry.", kapha: "Consistently low. Undisturbed by missing a meal." }, vi: { trait: "Cảm giác thèm ăn", vata: "Thay đổi thất thường. Có thể bỏ bữa. Dễ lo âu, chóng mặt.", pitta: "Mạnh. Thường hay đói. Ít khi bỏ bữa vì dễ cáu gắt.", kapha: "Thấp và ổn định. Không bị ảnh hưởng khi bỏ bữa." } },
+            { id: "digestion", en: { trait: "Digestion", vata: "Tends toward gas, constipation or bloating.", pitta: "Tends toward loose stool, diarrhea or burning.", kapha: "Tends to feel heavy after eating." }, vi: { trait: "Tiêu hoá", vata: "Có xu hướng đầy hơi, táo bón hoặc chướng bụng.", pitta: "Có xu hướng phân lỏng, tiêu chảy hoặc nóng rát.", kapha: "Có xu hướng cảm thấy nặng bụng sau khi ăn." } },
+            { id: "elimination", en: { trait: "Elimination", vata: "Stool may be hard or dry, strain to eliminate and skip days.", pitta: "Stool may be loose or unformed and may burn. May go 2 to 3x per day.", kapha: "Stool may be large, thick, and sluggish. May take some time to go." }, vi: { trait: "Đi tiêu", vata: "Phân cứng hoặc khô, phải rặn, bỏ qua vài ngày không đi.", pitta: "Phân lỏng, có thể gây nóng rát. Đi tiêu nhiều lần trong ngày.", kapha: "Phân to, đặc, chậm ra, có thể nhờn dầu. Mất thời gian để đi tiêu." } },
+            { id: "sleep", en: { trait: "Sleep", vata: "Difficulty falling asleep, light sleeper, broken up, nonsensical thoughts in night.", pitta: "Easy to fall asleep, sleeps soundly, may wake with excess heat or thoughts of tasks.", kapha: "Difficulty waking, deep sleep, prolonged sleep." }, vi: { trait: "Ngủ", vata: "Khó ngủ, ngủ nông, giấc ngủ gián đoạn, suy nghĩ lan man khi thức.", pitta: "Dễ ngủ, ngủ sâu. Có thể thức vì quá nóng hoặc nghĩ việc cần làm.", kapha: "Khó thức dậy, ngủ sâu, thời gian ngủ kéo dài." } },
+            { id: "activity", en: { trait: "Physical Activity", vata: "Hyperactive, may prefer excess energy exertion", pitta: "Moderate, competitive, may crave heated practices", kapha: "Slow, hard to get going" }, vi: { trait: "Hoạt động thể chất", vata: "Hiếu động, thích vận động tiêu hao nhiều năng lượng", pitta: "Mức độ vừa phải, tính cạnh tranh, thích tập luyện tạo nhiệt", kapha: "Chậm, khó bắt đầu vận động" } },
+            { id: "temp", en: { trait: "Temperature", vata: "Tends to feeling cold, cold hand and feet", pitta: "Tends to feeling warm", kapha: "Maintains stable temperature" }, vi: { trait: "Nhiệt độ cơ thể", vata: "Có xu hướng cảm thấy lạnh, tay chân lạnh", pitta: "Có xu hướng cảm thấy ấm hoặc nóng", kapha: "Duy trì nhiệt độ cơ thể ổn định" } },
+            { id: "sweat", en: { trait: "Sweat", vata: "Minimal to no sweat", pitta: "Sweats easily with exertion, may have pungent odor", kapha: "Sweats easily with exertion, may have sweet odor" }, vi: { trait: "Mồ hôi", vata: "Ít hoặc hầu như không ra mồ hôi", pitta: "Dễ đổ mồ hôi khi gắng sức, có thể có mùi hăng", kapha: "Dễ đổ mồ hôi, có thể có mùi ngọt" } },
+            { id: "urine", en: { trait: "Urination", vata: "May be scanty, may be excessive, no odor", pitta: "May have pungent odor", kapha: "May have sweet odor" }, vi: { trait: "Tiểu tiện", vata: "Tiểu ít hoặc nhiều, thường không mùi", pitta: "Nước tiểu có thể có mùi hăng", kapha: "Nước tiểu có thể có mùi ngọt" } },
+            { id: "menses", en: { trait: "Menses", vata: "Light, irregular", pitta: "Medium to heavy, 3 to 5 days, regular", kapha: "Heavier, 5 to 7 days, regular" }, vi: { trait: "Kinh nguyệt", vata: "Ít, không đều", pitta: "Lượng vừa đến nhiều, đều, 3 đến 5 ngày", kapha: "Lượng nhiều hơn, đều, 5 đến 7 ngày" } },
+            { id: "personality", en: { trait: "Personality", vata: "Butterfly, creative, enthusiastic, vivacious", pitta: "Bull, perceptive, disciplined, logical", kapha: "Turtle, nurturing, calm, devotional" }, vi: { trait: "Tính cách", vata: "Như bươm bướm, sáng tạo, nhiệt tình, hoạt bát", pitta: "Như bò mộng, nhạy bén, kỷ luật, logic", kapha: "Như rùa, nuôi dưỡng, điềm tĩnh, tận tâm" } },
+            { id: "mental", en: { trait: "Mental Activity", vata: "Hyperactive, overthinking, variable, scattered thoughts, difficulty making decisions", pitta: "Moderate, steady, goal oriented, makes decisions easily", kapha: "Dull, slow, methodical, careful but easy going about decisions" }, vi: { trait: "Hoạt động tinh thần", vata: "Quá năng động, suy nghĩ nhiều, phân tán, khó đưa ra quyết định", pitta: "Vừa phải, ổn định, hướng đến mục tiêu, dễ đưa ra quyết định", kapha: "Chậm chạp, có phương pháp, thoải mái khi quyết định" } },
+            { id: "stress", en: { trait: "Reaction to Stress", vata: "Overwhelm, worry", pitta: "Irritable, but usually rise to the challenge", kapha: "Withdrawal, reclusive" }, vi: { trait: "Phản ứng với căng thẳng", vata: "Choáng ngợp, lo lắng", pitta: "Dễ cáu kỉnh nhưng có khả năng vượt qua thử thách", kapha: "Thu mình, có xu hướng tách biệt" } },
+            { id: "emotions", en: { trait: "Emotions", vata: "Anxiety, fear, uncertainty", pitta: "Anger, hate, jealousy", kapha: "Calm, greedy, attachment" }, vi: { trait: "Cảm xúc", vata: "Lo âu, sợ hãi, bất an", pitta: "Giận dữ, ghét bỏ, ghen tị", kapha: "Bình tĩnh, tham lam, bám chấp" } },
+            { id: "intellect", en: { trait: "Intellect", vata: "Quick but faulty response, answering without fully thinking", pitta: "Sharp, accurate response, quick, witty", kapha: "Slow, exact, thoughtful, mindful, steady" }, vi: { trait: "Trí tuệ / cách tư duy", vata: "Phản ứng nhanh nhưng thiếu chính xác, trả lời khi chưa suy nghĩ kỹ", pitta: "Sắc bén, chính xác, nhanh trí, hóm hỉnh", kapha: "Chậm, chính xác, sâu sắc, chú tâm, ổn định" } },
+            { id: "dreams", en: { trait: "Dreams", vata: "Quick, active, many, fearful, no real focus", pitta: "Fiery, war, violence, task oriented", kapha: "Lakes, snow, romantic, lazy, no dreams" }, vi: { trait: "Giấc mơ", vata: "Nhanh, nhiều hoạt động, mang tính sợ hãi, không có chủ đề rõ", pitta: "Có lửa, chiến tranh, bạo lực hoặc xoay quanh công việc", kapha: "Hồ nước, tuyết, lãng mạn, lười biếng, ít nhớ giấc mơ" } },
+            { id: "speech", en: { trait: "Speech", vata: "Rapid, unclear, airy, anxious", pitta: "Sharp, penetrating, convincing", kapha: "Slow, monotonous, soothing" }, vi: { trait: "Cách nói", vata: "Nhanh, không rõ ràng, nhẹ thoáng, có vẻ lo âu", pitta: "Sắc, thuyết phục, có sức xuyên thấu", kapha: "Chậm, đều đều, dịu và tạo cảm giác xoa dịu" } }
         ];
 
         /* --- HELPER FUNCTIONS --- */
+        function saveName(val) {
+            selections.name = val.trim();
+            saveLocalData();
+        }
+
         function getCurrentCounts() {
-            let counts = {
-                prakruti: {
-                    vata: 0,
-                    pitta: 0,
-                    kapha: 0
-                },
-                vikruti: {
-                    vata: 0,
-                    pitta: 0,
-                    kapha: 0
-                }
-            };
-            for (let key in selections.prakruti) {
-                counts.prakruti[selections.prakruti[key]]++;
-            }
-            for (let key in selections.vikruti) {
-                counts.vikruti[selections.vikruti[key]]++;
-            }
+            let counts = { prakruti: { vata: 0, pitta: 0, kapha: 0 }, vikruti: { vata: 0, pitta: 0, kapha: 0 } };
+            for (let key in selections.prakruti) { counts.prakruti[selections.prakruti[key]]++; }
+            for (let key in selections.vikruti) { counts.vikruti[selections.vikruti[key]]++; }
             return counts;
         }
 
         function capitalize(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function getProfileTextFormat(pRank, vRank) {
+            let introText = selections.name 
+                ? (currentLang === 'en' ? `${selections.name}'s Ayurvedic Profile:\n\n` : `Hồ sơ Ayurveda của ${selections.name}:\n\n`)
+                : (currentLang === 'en' ? `My Ayurvedic Profile:\n\n` : `Hồ sơ Ayurveda của tôi:\n\n`);
+                
+            const textData = {
+                en: `${introText}Constitution (Prakruti):\nPrimary: ${capitalize(pRank[0])}\nSecondary: ${capitalize(pRank[1])}\nTertiary: ${capitalize(pRank[2])}\n\nCurrent Imbalance (Vikruti):\nPrimary: ${capitalize(vRank[0])}\nSecondary: ${capitalize(vRank[1])}\nTertiary: ${capitalize(vRank[2])}`,
+                vi: `${introText}Thể tạng bẩm sinh (Prakruti):\nChính: ${capitalize(pRank[0])}\nPhụ: ${capitalize(pRank[1])}\nThứ ba: ${capitalize(pRank[2])}\n\nMất cân bằng hiện tại (Vikruti):\nChính: ${capitalize(vRank[0])}\nPhụ: ${capitalize(vRank[1])}\nThứ ba: ${capitalize(vRank[2])}`
+            };
+            return textData[currentLang];
         }
 
         /* --- DISPLAY DASHBOARD --- */
@@ -1230,6 +785,7 @@
 
             const instr = document.getElementById('instructions');
             if (instr) instr.style.display = 'none';
+            document.getElementById('name-section').style.display = 'none';
 
             document.getElementById('progress-bar').style.width = '100%';
 
@@ -1251,10 +807,15 @@
 
             let prakrutiRank = Object.keys(counts.prakruti).sort((a, b) => counts.prakruti[b] - counts.prakruti[a]);
             let vikrutiRank = Object.keys(counts.vikruti).sort((a, b) => counts.vikruti[b] - counts.vikruti[a]);
+            
+            let dashTitle = translations[currentLang].dashboardTitle;
+            if (selections.name) {
+                dashTitle = currentLang === 'en' ? `${selections.name}'s Dosha Profile` : `Hồ sơ Thể tạng của ${selections.name}`;
+            }
 
             resultsHTML += `
       <h2 style="font-size: 1.8em; margin-top: 30px; margin-bottom: 20px; text-align: center; color: #333;">
-        ${translations[currentLang].dashboardTitle}
+        ${dashTitle}
       </h2>
       <table class="dashboard-table">
         <tr>
@@ -1306,7 +867,6 @@
 
             document.getElementById('results').innerHTML = resultsHTML;
 
-            // Scroll to the results if you are submitting your own test
             if (!isSharedView) {
                 setTimeout(() => {
                     document.getElementById('results').scrollIntoView({
@@ -1359,7 +919,9 @@
                 const result = await response.json();
                 const link = window.location.origin + window.location.pathname + '?id=' + result.id + '&l=' + currentLang;
 
-                const titleText = currentLang === 'en' ? 'My Ayurvedic Dosha Profile' : 'Hồ sơ Thể tạng Ayurveda của tôi';
+                const titleText = selections.name 
+                    ? (currentLang === 'en' ? `${selections.name}'s Ayurvedic Dosha Profile` : `Hồ sơ Thể tạng Ayurveda của ${selections.name}`)
+                    : (currentLang === 'en' ? 'My Ayurvedic Dosha Profile' : 'Hồ sơ Thể tạng Ayurveda của tôi');
 
                 if (navigator.share) {
                     navigator.share({
@@ -1413,12 +975,10 @@
                 try {
                     selections = JSON.parse(saved);
                 } catch (e) {
-                    selections = {
-                        prakruti: {},
-                        vikruti: {}
-                    };
+                    selections = { name: "", prakruti: {}, vikruti: {} };
                 }
             }
+            if(!selections.name) selections.name = "";
         }
 
         function saveLocalData() {
@@ -1426,20 +986,15 @@
         }
 
         function resetQuizData() {
-            selections = {
-                prakruti: {},
-                vikruti: {}
-            };
+            selections = { name: "", prakruti: {}, vikruti: {} };
+            document.getElementById('user-name').value = "";
             saveLocalData();
             isSharedView = false;
             document.getElementById('shared-banner').style.display = 'none';
             document.getElementById('results').innerHTML = '';
             window.history.replaceState({}, document.title, window.location.pathname);
             setLang(currentLang);
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function setLang(lang) {
@@ -1451,6 +1006,10 @@
                 instr.innerHTML = translations[currentLang].instructions;
                 instr.style.display = 'block';
             }
+            
+            const nameInput = document.getElementById('user-name');
+            nameInput.placeholder = translations[currentLang].namePlaceholder;
+            if (selections.name) nameInput.value = selections.name;
 
             document.getElementById('submit-btn').innerText = translations[currentLang].submit;
 
@@ -1460,10 +1019,16 @@
 
             const banner = document.getElementById('shared-banner');
             if (isSharedView) {
-                banner.innerHTML = translations[currentLang].sharedMsg;
+                let bannerText = translations[currentLang].sharedMsg;
+                if (selections.name) {
+                    bannerText = currentLang === 'en' ? `You are viewing ${selections.name}'s Dosha profile. You can scroll through the quiz to see the answers.` : `Bạn đang xem hồ sơ Thể tạng của ${selections.name}. Bạn có thể cuộn xuống để xem các câu trả lời.`;
+                }
+                banner.innerHTML = bannerText;
                 banner.style.display = 'block';
+                document.getElementById('name-section').style.display = 'none';
             } else {
                 banner.style.display = 'none';
+                document.getElementById('name-section').style.display = 'block';
             }
 
             renderQuiz();
@@ -1484,6 +1049,7 @@
 
             isSharedView = false;
             document.getElementById('shared-banner').style.display = 'none';
+            document.getElementById('name-section').style.display = 'block';
             saveLocalData();
 
             const buttons = document.querySelectorAll(`.sel-btn[data-qid="${qId}"][data-type="${type}"]`);
@@ -1555,7 +1121,6 @@
             document.getElementById('submit-btn').style.display = 'block';
         }
 
-        // Initialize on Load
         initQuiz();
     </script>
 </body>
