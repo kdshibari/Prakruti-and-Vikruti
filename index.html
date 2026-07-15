@@ -78,13 +78,8 @@
         }
 
         @keyframes float {
-            0% {
-                transform: translate(0, 0) scale(1);
-            }
-
-            100% {
-                transform: translate(4%, 4%) scale(1.05);
-            }
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(4%, 4%) scale(1.05); }
         }
 
         .fixed-lang-switch {
@@ -135,7 +130,7 @@
             margin-top: 20px;
         }
 
-        /* Shrinking Progress Bar */
+        /* Desktop Sticky Bar (Full Width) */
         .sticky-top-bar {
             position: sticky;
             top: 20px;
@@ -152,16 +147,12 @@
             align-items: center;
             width: 100%;
             box-sizing: border-box;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            margin-left: 0;
+            transition: all 0.4s ease;
         }
 
         .sticky-top-bar.scrolled {
-            padding: 8px 15px;
+            padding: 8px 20px;
             margin-bottom: 15px;
-            top: 20px;
-            width: 50%;
-            margin-left: 0;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
         }
 
@@ -287,17 +278,9 @@
             margin-bottom: 10px;
         }
 
-        .option-card.vata .dosha-icon {
-            stroke: var(--vata-color);
-        }
-
-        .option-card.pitta .dosha-icon {
-            stroke: var(--pitta-color);
-        }
-
-        .option-card.kapha .dosha-icon {
-            stroke: var(--kapha-color);
-        }
+        .option-card.vata .dosha-icon { stroke: var(--vata-color); }
+        .option-card.pitta .dosha-icon { stroke: var(--pitta-color); }
+        .option-card.kapha .dosha-icon { stroke: var(--kapha-color); }
 
         .dosha-name {
             font-size: 1em;
@@ -352,26 +335,9 @@
             flex: 1;
         }
 
-        .sel-btn.vata.selected {
-            background: #e3f2fd;
-            border-color: var(--vata-color);
-            color: #1565c0;
-            box-shadow: 0 2px 8px rgba(135, 197, 216, 0.3);
-        }
-
-        .sel-btn.pitta.selected {
-            background: #fff3e0;
-            border-color: var(--pitta-color);
-            color: #e65100;
-            box-shadow: 0 2px 8px rgba(244, 162, 97, 0.3);
-        }
-
-        .sel-btn.kapha.selected {
-            background: #e8f5e9;
-            border-color: var(--kapha-color);
-            color: #2e7d32;
-            box-shadow: 0 2px 8px rgba(129, 199, 132, 0.3);
-        }
+        .sel-btn.vata.selected { background: #e3f2fd; border-color: var(--vata-color); color: #1565c0; box-shadow: 0 2px 8px rgba(135, 197, 216, 0.3); }
+        .sel-btn.pitta.selected { background: #fff3e0; border-color: var(--pitta-color); color: #e65100; box-shadow: 0 2px 8px rgba(244, 162, 97, 0.3); }
+        .sel-btn.kapha.selected { background: #e8f5e9; border-color: var(--kapha-color); color: #2e7d32; box-shadow: 0 2px 8px rgba(129, 199, 132, 0.3); }
 
         #submit-btn {
             background: #ffffff;
@@ -439,14 +405,8 @@
             font-size: 1em;
         }
 
-        .dashboard-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .rank-label {
-            font-weight: 600;
-            color: #555;
-        }
+        .dashboard-table tr:last-child td { border-bottom: none; }
+        .rank-label { font-weight: 600; color: #555; }
 
         .action-buttons {
             display: flex;
@@ -478,10 +438,9 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
         }
 
+        /* Mobile specific styling to avoid progress bar overlap */
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
+            body { padding: 10px; }
 
             .fixed-lang-switch {
                 top: 15px;
@@ -500,96 +459,33 @@
                 margin-top: 50px;
             }
 
+            /* Shrink progress bar width ONLY on mobile */
             .sticky-top-bar {
                 top: 15px;
-                width: calc(100% - 100px);
+                width: calc(100% - 90px); 
                 margin-left: 0;
             }
 
             .sticky-top-bar.scrolled {
-                width: calc(100% - 100px);
+                width: calc(100% - 90px);
+                padding: 8px 15px;
             }
 
-            h1 {
-                font-size: 1.6em;
-            }
-
-            .question-block {
-                padding: 15px;
-                border-radius: 16px;
-            }
-
-            .options-grid {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-
-            .option-card {
-                flex-direction: row;
-                text-align: left;
-                padding: 12px 15px;
-                align-items: center;
-            }
-
-            .dosha-icon {
-                margin-bottom: 0;
-                margin-right: 15px;
-                width: 32px;
-                height: 32px;
-                flex-shrink: 0;
-            }
-
-            .option-card>div:not(.dosha-icon) {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .dosha-name {
-                margin-bottom: 2px;
-                font-size: 0.95em;
-            }
-
-            .dosha-desc {
-                font-size: 0.95em;
-            }
-
-            .selection-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .selection-label {
-                width: 100%;
-                margin-bottom: 10px;
-                text-align: center;
-            }
-
-            .selection-buttons {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .sel-btn {
-                padding: 12px 5px;
-            }
-
-            .results-container {
-                flex-direction: column;
-            }
-
-            .dashboard-table th,
-            .dashboard-table td {
-                padding: 12px 5px;
-                font-size: 0.85em;
-            }
-
-            .action-btn {
-                flex: 1;
-                min-width: 45%;
-                justify-content: center;
-                padding: 12px 10px;
-                font-size: 0.95em;
-            }
+            h1 { font-size: 1.6em; }
+            .question-block { padding: 15px; border-radius: 16px; }
+            .options-grid { grid-template-columns: 1fr; gap: 10px; }
+            .option-card { flex-direction: row; text-align: left; padding: 12px 15px; align-items: center; }
+            .dosha-icon { margin-bottom: 0; margin-right: 15px; width: 32px; height: 32px; flex-shrink: 0; }
+            .option-card>div:not(.dosha-icon) { display: flex; flex-direction: column; }
+            .dosha-name { margin-bottom: 2px; font-size: 0.95em; }
+            .dosha-desc { font-size: 0.95em; }
+            .selection-row { flex-direction: column; align-items: stretch; }
+            .selection-label { width: 100%; margin-bottom: 10px; text-align: center; }
+            .selection-buttons { width: 100%; justify-content: space-between; }
+            .sel-btn { padding: 12px 5px; }
+            .results-container { flex-direction: column; }
+            .dashboard-table th, .dashboard-table td { padding: 12px 5px; font-size: 0.85em; }
+            .action-btn { flex: 1; min-width: 45%; justify-content: center; padding: 12px 10px; font-size: 0.95em; }
         }
     </style>
 </head>
@@ -617,7 +513,7 @@
 
         <div class="header-section" id="header-section">
             <div class="logo-container">
-                <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="200" height="200" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="pitta-grad" x1="0" y1="0" x2="0" y2="-10">
                             <stop offset="0%" stop-color="#f4a261" stop-opacity="0.2" />
