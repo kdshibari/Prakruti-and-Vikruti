@@ -304,9 +304,9 @@
             margin-bottom: 10px;
         }
 
-        .option-card.vata .dosha-icon { stroke: var(--vata-color); }
-        .option-card.pitta .dosha-icon { stroke: var(--pitta-color); }
-        .option-card.kapha .dosha-icon { stroke: var(--kapha-color); }
+        .option-card.vata .dosha-icon, .dosha-info-card.vata .dosha-icon { stroke: var(--vata-color); }
+        .option-card.pitta .dosha-icon, .dosha-info-card.pitta .dosha-icon { stroke: var(--pitta-color); }
+        .option-card.kapha .dosha-icon, .dosha-info-card.kapha .dosha-icon { stroke: var(--kapha-color); }
 
         .dosha-name {
             font-size: 1em;
@@ -461,6 +461,35 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
         }
 
+        /* Dosha Info Section Styling */
+        .dosha-info-section {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        .dosha-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .dosha-info-card {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: #555;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .dosha-info-card .dosha-icon {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 12px;
+        }
+
         @media (max-width: 768px) {
             body { padding: 10px; }
             .glass-container { padding: 20px 10px; border-radius: 20px; margin-top: 50px; }
@@ -483,6 +512,7 @@
             .results-container { flex-direction: column; }
             .dashboard-table th, .dashboard-table td { padding: 12px 5px; font-size: 0.85em; }
             .action-btn { flex: 1; min-width: 45%; justify-content: center; padding: 12px 10px; font-size: 0.95em; }
+            .dosha-info-grid { grid-template-columns: 1fr; }
         }
 
         /* Specialized Print Styling */
@@ -494,6 +524,7 @@
             .question-block { break-inside: avoid; page-break-inside: avoid; box-shadow: none; border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; }
             .result-box { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc; }
             .dashboard-table { border: 1px solid #ccc; }
+            .dosha-info-card { border: 1px solid #ccc; break-inside: avoid; page-break-inside: avoid; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
@@ -616,7 +647,11 @@
                 dashboardTitle: "Final Dosha Designation", constPrakruti: "Constitution",
                 copyProfile: "Copy Link", shareProfile: "Share Profile", resetQuiz: "Clear & Restart", takeQuiz: "Take the Quiz", printProfile: "Print Profile",
                 sharedMsg: "You are viewing a shared Dosha profile. You can scroll through the quiz to see the answers.",
-                copied: "Copied!"
+                copied: "Copied!",
+                doshaInfoTitle: "Understanding the Doshas",
+                vataInfo: "<strong>Vata (Air & Space):</strong> The energy of movement. When balanced, it promotes creativity and vitality. Out of balance, it can lead to anxiety, dryness, and irregular digestion.",
+                pittaInfo: "<strong>Pitta (Fire & Water):</strong> The energy of transformation. When balanced, it brings intelligence, courage, and strong digestion. Out of balance, it can cause anger, inflammation, and burnout.",
+                kaphaInfo: "<strong>Kapha (Earth & Water):</strong> The energy of structure. When balanced, it fosters calmness, compassion, and strong immunity. Out of balance, it can lead to lethargy, attachment, and weight gain."
             },
             vi: {
                 title: "Bảng Câu Hỏi Thể Tạng",
@@ -630,7 +665,11 @@
                 dashboardTitle: "Phân Loại Thể Tạng", constPrakruti: "Prakruti",
                 copyProfile: "Sao chép link", shareProfile: "Chia sẻ", resetQuiz: "Làm lại từ đầu", takeQuiz: "Làm Bài Trắc Nghiệm", printProfile: "In Hồ Sơ",
                 sharedMsg: "Bạn đang xem hồ sơ Thể tạng được chia sẻ. Bạn có thể điều chỉnh các câu trả lời bên dưới.",
-                copied: "Đã sao chép!"
+                copied: "Đã sao chép!",
+                doshaInfoTitle: "Tìm Hiểu Về Các Thể Tạng (Dosha)",
+                vataInfo: "<strong>Vata (Khí & Không gian):</strong> Năng lượng của chuyển động. Khi cân bằng: sáng tạo, tràn đầy sức sống. Khi mất cân bằng: lo âu, khô ráp, tiêu hóa thất thường.",
+                pittaInfo: "<strong>Pitta (Lửa & Nước):</strong> Năng lượng của chuyển hóa. Khi cân bằng: thông minh, can đảm, tiêu hóa tốt. Khi mất cân bằng: tức giận, viêm nhiễm, kiệt sức.",
+                kaphaInfo: "<strong>Kapha (Đất & Nước):</strong> Năng lượng của cấu trúc. Khi cân bằng: điềm tĩnh, từ bi, miễn dịch tốt. Khi mất cân bằng: trì trệ, bám chấp, dễ tăng cân."
             }
         };
 
@@ -799,6 +838,26 @@
         </div>
       `;
             }
+
+            resultsHTML += `
+              <div class="dosha-info-section">
+                <h3 style="text-align:center; color:#333; margin-bottom: 20px;">${translations[currentLang].doshaInfoTitle}</h3>
+                <div class="dosha-info-grid">
+                  <div class="dosha-info-card vata">
+                    ${icons.vata}
+                    <p>${translations[currentLang].vataInfo}</p>
+                  </div>
+                  <div class="dosha-info-card pitta">
+                    ${icons.pitta}
+                    <p>${translations[currentLang].pittaInfo}</p>
+                  </div>
+                  <div class="dosha-info-card kapha">
+                    ${icons.kapha}
+                    <p>${translations[currentLang].kaphaInfo}</p>
+                  </div>
+                </div>
+              </div>
+            `;
 
             document.getElementById('results').innerHTML = resultsHTML;
 
