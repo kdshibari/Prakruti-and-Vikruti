@@ -461,7 +461,6 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
         }
 
-        /* Dosha Info Section Styling */
         .dosha-info-section {
             margin-top: 50px;
             padding-top: 30px;
@@ -515,16 +514,107 @@
             .dosha-info-grid { grid-template-columns: 1fr; }
         }
 
-        /* Specialized Print Styling */
+        /* Highly Optimized Print Styling to reduce from 17 pages down to 2-3 pages */
         @media print {
-            body { background: #fff; padding: 0; margin: 0; color: #000; }
-            .bg-organic, .fixed-lang-switch, .sticky-top-bar, .action-buttons, #submit-btn, .instruction-box { display: none !important; }
-            .glass-container { border: none; box-shadow: none; margin: 0; padding: 0; max-width: 100%; }
-            .name-input { border: none; background: none; font-weight: bold; font-size: 1.4em; padding: 0; box-shadow: none; color: #000; }
-            .question-block { break-inside: avoid; page-break-inside: avoid; box-shadow: none; border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; }
-            .result-box { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc; }
-            .dashboard-table { border: 1px solid #ccc; }
-            .dosha-info-card { border: 1px solid #ccc; break-inside: avoid; page-break-inside: avoid; }
+            body { background: #fff; padding: 0; margin: 0; color: #000; font-size: 10pt; }
+            
+            /* Hide all unnecessary UI elements */
+            .bg-organic, .fixed-lang-switch, .sticky-top-bar, .action-buttons, #submit-btn, .instruction-box, .shared-banner { display: none !important; }
+            
+            /* Remove margins and shadows to save space */
+            .glass-container { border: none; box-shadow: none; margin: 0; padding: 0; max-width: 100%; display: block; }
+            
+            /* Format Name Title */
+            .name-input { border: none; background: none; font-weight: bold; font-size: 1.8em; padding: 0; box-shadow: none; color: #000; text-align: center; margin-bottom: 20px; }
+            
+            /* Compact Results Dashboard */
+            .results-container { display: flex; flex-direction: row; justify-content: space-between; gap: 10px; margin-top: 10px; margin-bottom: 20px; }
+            .result-box { padding: 10px; border: 1px solid #ccc; box-shadow: none; flex: 1; margin: 0; }
+            .result-box h3 { margin-bottom: 5px; font-size: 1.1em; }
+            .result-box p { margin: 2px 0; font-size: 1em; color: #000 !important; }
+            
+            .dashboard-table { margin-top: 10px; margin-bottom: 20px; box-shadow: none; border: 1px solid #ccc; }
+            .dashboard-table th, .dashboard-table td { padding: 8px; border-bottom: 1px solid #eee; }
+
+            /* Aggressively Compact the Quiz Questions */
+            /* Hide all the descriptive definition blocks and icons to save massive space */
+            .options-grid { display: none !important; } 
+            .dosha-icon { display: none !important; }
+
+            /* Flatten questions into single clean rows */
+            .question-block { 
+                display: flex; 
+                flex-direction: row;
+                align-items: center; 
+                justify-content: space-between; 
+                break-inside: avoid; 
+                page-break-inside: avoid; 
+                box-shadow: none; 
+                border: none; 
+                border-bottom: 1px solid #eee; 
+                padding: 6px 0; 
+                margin-bottom: 0; 
+                border-radius: 0;
+            }
+            .question-title { 
+                font-size: 1em; 
+                margin-bottom: 0; 
+                text-align: left; 
+                width: 25%; 
+                font-weight: bold;
+            }
+            .selection-area { 
+                background: none; 
+                padding: 0; 
+                border: none; 
+                width: 75%; 
+                display: flex; 
+                flex-direction: row;
+                gap: 20px; 
+            }
+            .selection-row { 
+                margin: 0; 
+                flex: 1; 
+                display: flex; 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 4px;
+            }
+            .selection-label { 
+                font-size: 0.75em; 
+                width: 100%; 
+                text-align: left;
+                color: #555;
+                font-weight: 600;
+            }
+            .selection-buttons { 
+                width: 100%; 
+                justify-content: flex-start;
+                gap: 5px;
+            }
+            
+            /* Ghost unselected buttons, highlight selected buttons */
+            .sel-btn { 
+                padding: 4px 8px; 
+                font-size: 0.8em; 
+                background: transparent !important; 
+                border: 1px solid #ddd; 
+                color: #aaa !important; 
+                box-shadow: none !important;
+            }
+            .sel-btn.selected { 
+                border: 2px solid #000; 
+                color: #000 !important; 
+                font-weight: bold; 
+                background: #f0f0f0 !important;
+            }
+
+            /* Compact Dosha Summary at the bottom */
+            .dosha-info-section { margin-top: 30px; padding-top: 15px; border-top: 2px solid #ccc; page-break-inside: avoid; }
+            .dosha-info-grid { display: flex; flex-direction: row; gap: 15px; margin-top: 10px; }
+            .dosha-info-card { padding: 10px; border: 1px solid #ccc; box-shadow: none; text-align: left; font-size: 0.85em; flex: 1; }
+
+            /* Force browsers to print borders and light backgrounds correctly */
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
@@ -733,18 +823,6 @@
 
         function capitalize(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-
-        function getProfileTextFormat(pRank, vRank) {
-            let introText = selections.name 
-                ? (currentLang === 'en' ? `${selections.name}'s Ayurvedic Profile:\n\n` : `Hồ sơ Ayurveda của ${selections.name}:\n\n`)
-                : (currentLang === 'en' ? `My Ayurvedic Profile:\n\n` : `Hồ sơ Ayurveda của tôi:\n\n`);
-                
-            const textData = {
-                en: `${introText}Constitution (Prakruti):\nPrimary: ${capitalize(pRank[0])}\nSecondary: ${capitalize(pRank[1])}\nTertiary: ${capitalize(pRank[2])}\n\nCurrent Imbalance (Vikruti):\nPrimary: ${capitalize(vRank[0])}\nSecondary: ${capitalize(vRank[1])}\nTertiary: ${capitalize(vRank[2])}`,
-                vi: `${introText}Thể tạng bẩm sinh (Prakruti):\nChính: ${capitalize(pRank[0])}\nPhụ: ${capitalize(pRank[1])}\nThứ ba: ${capitalize(pRank[2])}\n\nMất cân bằng hiện tại (Vikruti):\nChính: ${capitalize(vRank[0])}\nPhụ: ${capitalize(vRank[1])}\nThứ ba: ${capitalize(vRank[2])}`
-            };
-            return textData[currentLang];
         }
 
         /* --- DISPLAY DASHBOARD --- */
