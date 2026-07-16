@@ -82,6 +82,38 @@
             100% { transform: translate(4%, 4%) scale(1.05); }
         }
 
+        .fixed-lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 300;
+            display: flex;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 1);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.3em;
+            transition: all 0.3s ease;
+            filter: grayscale(100%) opacity(0.4);
+        }
+
+        .lang-btn.active {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            filter: grayscale(0%) opacity(1);
+            transform: scale(1.05);
+        }
+
         .glass-container {
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
@@ -95,7 +127,7 @@
             z-index: 1;
             display: flex;
             flex-direction: column;
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         .sticky-top-bar {
@@ -112,8 +144,6 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 15px;
             width: 100%;
             box-sizing: border-box;
             transition: all 0.4s ease;
@@ -123,9 +153,6 @@
             padding: 8px 20px;
             margin-bottom: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.04);
-            width: 70%;
-            margin-left: auto;
-            margin-right: auto;
         }
 
         .progress-container {
@@ -147,35 +174,6 @@
             width: 0%;
             transition: width 0.4s ease;
             border-radius: 10px;
-        }
-
-        .lang-switch {
-            display: flex;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 40px;
-            padding: 4px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-            border: 1px solid #eee;
-            flex-shrink: 0;
-        }
-
-        .lang-btn {
-            background: transparent;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 1.2em;
-            transition: all 0.3s ease;
-            filter: grayscale(100%) opacity(0.4);
-            margin: 0;
-        }
-
-        .lang-btn.active {
-            background: #fff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            filter: grayscale(0%) opacity(1);
-            transform: scale(1.05);
         }
 
         .header-section {
@@ -465,12 +463,11 @@
 
         @media (max-width: 768px) {
             body { padding: 10px; }
-            .glass-container { padding: 20px 10px; border-radius: 20px; margin-top: 10px; }
-            
-            .sticky-top-bar { top: 10px; padding: 10px 15px; gap: 10px; width: 100%; }
-            .sticky-top-bar.scrolled { padding: 8px 15px; width: 100%; }
-            .lang-btn { padding: 4px 8px; font-size: 1.1em; }
-
+            .glass-container { padding: 20px 10px; border-radius: 20px; margin-top: 50px; }
+            .fixed-lang-switch { top: 15px; right: 15px; padding: 3px; }
+            .lang-btn { padding: 6px 10px; font-size: 1.1em; }
+            .sticky-top-bar { top: 15px; width: calc(100% - 90px); margin-left: 0; }
+            .sticky-top-bar.scrolled { width: calc(100% - 90px); padding: 8px 15px; }
             h1 { font-size: 1.6em; }
             .question-block { padding: 15px; border-radius: 16px; }
             .options-grid { grid-template-columns: 1fr; gap: 10px; }
@@ -487,6 +484,18 @@
             .dashboard-table th, .dashboard-table td { padding: 12px 5px; font-size: 0.85em; }
             .action-btn { flex: 1; min-width: 45%; justify-content: center; padding: 12px 10px; font-size: 0.95em; }
         }
+
+        /* Specialized Print Styling */
+        @media print {
+            body { background: #fff; padding: 0; margin: 0; color: #000; }
+            .bg-organic, .fixed-lang-switch, .sticky-top-bar, .action-buttons, #submit-btn, .instruction-box { display: none !important; }
+            .glass-container { border: none; box-shadow: none; margin: 0; padding: 0; max-width: 100%; }
+            .name-input { border: none; background: none; font-weight: bold; font-size: 1.4em; padding: 0; box-shadow: none; color: #000; }
+            .question-block { break-inside: avoid; page-break-inside: avoid; box-shadow: none; border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; }
+            .result-box { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc; }
+            .dashboard-table { border: 1px solid #ccc; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
     </style>
 </head>
 
@@ -498,15 +507,16 @@
         <div class="blob kapha-bg"></div>
     </div>
 
+    <div class="fixed-lang-switch">
+        <button class="lang-btn active" id="btn-en" onclick="setLang('en')" title="English">🇬🇧</button>
+        <button class="lang-btn" id="btn-vi" onclick="setLang('vi')" title="Tiếng Việt">🇻🇳</button>
+    </div>
+
     <div class="glass-container">
 
         <div class="sticky-top-bar" id="sticky-top-bar">
             <div class="progress-container">
                 <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            <div class="lang-switch">
-                <button class="lang-btn active" id="btn-en" onclick="setLang('en')" title="English">🇬🇧</button>
-                <button class="lang-btn" id="btn-vi" onclick="setLang('vi')" title="Tiếng Việt">🇻🇳</button>
             </div>
         </div>
 
@@ -604,7 +614,7 @@
                 resultsLongTerm: "Prakruti (Long Term)", resultsPresent: "Vikruti (Current)",
                 rank: "Rank", primary: "Primary", secondary: "Secondary", tertiary: "Tertiary",
                 dashboardTitle: "Final Dosha Designation", constPrakruti: "Constitution",
-                copyProfile: "Copy Link", shareProfile: "Share Profile", resetQuiz: "Clear & Restart", takeQuiz: "Take the Quiz",
+                copyProfile: "Copy Link", shareProfile: "Share Profile", resetQuiz: "Clear & Restart", takeQuiz: "Take the Quiz", printProfile: "Print Profile",
                 sharedMsg: "You are viewing a shared Dosha profile. You can scroll through the quiz to see the answers.",
                 copied: "Copied!"
             },
@@ -618,7 +628,7 @@
                 resultsLongTerm: "Prakruti (Lâu dài)", resultsPresent: "Vikruti (Hiện tại)",
                 rank: "Hạng", primary: "Chính", secondary: "Phụ", tertiary: "Thứ 3",
                 dashboardTitle: "Phân Loại Thể Tạng", constPrakruti: "Prakruti",
-                copyProfile: "Sao chép link", shareProfile: "Chia sẻ", resetQuiz: "Làm lại từ đầu", takeQuiz: "Làm Bài Trắc Nghiệm",
+                copyProfile: "Sao chép link", shareProfile: "Chia sẻ", resetQuiz: "Làm lại từ đầu", takeQuiz: "Làm Bài Trắc Nghiệm", printProfile: "In Hồ Sơ",
                 sharedMsg: "Bạn đang xem hồ sơ Thể tạng được chia sẻ. Bạn có thể điều chỉnh các câu trả lời bên dưới.",
                 copied: "Đã sao chép!"
             }
@@ -633,6 +643,7 @@
         const shareIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`;
         const copyIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
         const resetIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>`;
+        const printIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>`;
 
         const questions = [
             { id: "face", en: { trait: "Face", vata: "Oblong, oval, narrow, thin, asymmetry, prominent bone structure", pitta: "Angular, muscular, defined features, rectangular, wider forehead, stronger, heart shaped", kapha: "Round, wide, oval, moon, pear shaped, fleshier, chin wider than forehead" }, vi: { trait: "Gương mặt", vata: "Dài, bầu dục, hẹp, gầy, hơi bất đối xứng, cấu trúc xương nổi rõ", pitta: "Góc cạnh, hoặc cơ bắp, đường nét rõ, hình chữ nhật hoặc hình trái tim, trán rộng", kapha: "Tròn, rộng, bầu dục, hình mặt trăng hoặc quả lê, đầy đặn hơn, cằm thường rộng hơn trán" } },
@@ -762,6 +773,9 @@
             if (isShared) {
                 resultsHTML += `
         <div class="action-buttons">
+          <button class="action-btn" onclick="window.print()">
+            ${printIcon} ${translations[currentLang].printProfile}
+          </button>
           <button class="action-btn" onclick="window.location.href = window.location.pathname">
             ${resetIcon} ${translations[currentLang].takeQuiz || 'Take the Quiz'}
           </button>
@@ -775,6 +789,9 @@
           </button>
           <button class="action-btn" onclick="shareResults()">
             ${shareIcon} ${translations[currentLang].shareProfile}
+          </button>
+          <button class="action-btn" onclick="window.print()">
+            ${printIcon} ${translations[currentLang].printProfile}
           </button>
           <button class="action-btn" onclick="resetQuizData()">
             ${resetIcon} ${translations[currentLang].resetQuiz}
