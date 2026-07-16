@@ -113,7 +113,7 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
-            justify-content: space-between; /* keeps progress bar left, lang switch right */
+            justify-content: space-between;
             gap: 15px;
             width: 100%;
             box-sizing: border-box;
@@ -494,7 +494,6 @@
             body { padding: 10px; }
             .glass-container { padding: 20px 10px; border-radius: 20px; margin-top: 10px; }
             
-            /* Responsive adjustments for unified header */
             .sticky-top-bar { padding: 10px 15px; gap: 10px; width: 100%; top: 10px; }
             .sticky-top-bar.scrolled { padding: 8px 15px; width: 100%; }
             .lang-btn { padding: 4px 8px; font-size: 1.1em; }
@@ -517,20 +516,16 @@
             .dosha-info-grid { grid-template-columns: 1fr; }
         }
 
-        /* Highly Optimized Print Styling to reduce from 17 pages down to 2-3 pages */
+        /* Highly Optimized Print Styling */
         @media print {
             body { background: #fff; padding: 0; margin: 0; color: #000; font-size: 10pt; }
             
-            /* Hide all unnecessary UI elements */
             .bg-organic, .sticky-top-bar, .action-buttons, #submit-btn, .instruction-box, .shared-banner { display: none !important; }
             
-            /* Remove margins and shadows to save space */
             .glass-container { border: none; box-shadow: none; margin: 0; padding: 0; max-width: 100%; display: block; }
             
-            /* Format Name Title */
             .name-input { border: none; background: none; font-weight: bold; font-size: 1.8em; padding: 0; box-shadow: none; color: #000; text-align: center; margin-bottom: 20px; }
             
-            /* Compact Results Dashboard */
             .results-container { display: flex; flex-direction: row; justify-content: space-between; gap: 10px; margin-top: 10px; margin-bottom: 20px; }
             .result-box { padding: 10px; border: 1px solid #ccc; box-shadow: none; flex: 1; margin: 0; }
             .result-box h3 { margin-bottom: 5px; font-size: 1.1em; }
@@ -539,12 +534,9 @@
             .dashboard-table { margin-top: 10px; margin-bottom: 20px; box-shadow: none; border: 1px solid #ccc; }
             .dashboard-table th, .dashboard-table td { padding: 8px; border-bottom: 1px solid #eee; }
 
-            /* Aggressively Compact the Quiz Questions */
-            /* Hide all the descriptive definition blocks and icons to save massive space */
             .options-grid { display: none !important; } 
             .dosha-icon { display: none !important; }
 
-            /* Flatten questions into single clean rows */
             .question-block { 
                 display: flex; 
                 flex-direction: row;
@@ -596,7 +588,6 @@
                 gap: 5px;
             }
             
-            /* Ghost unselected buttons, highlight selected buttons */
             .sel-btn { 
                 padding: 4px 8px; 
                 font-size: 0.8em; 
@@ -612,12 +603,10 @@
                 background: #f0f0f0 !important;
             }
 
-            /* Compact Dosha Summary at the bottom */
             .dosha-info-section { margin-top: 30px; padding-top: 15px; border-top: 2px solid #ccc; page-break-inside: avoid; }
             .dosha-info-grid { display: flex; flex-direction: row; gap: 15px; margin-top: 10px; }
             .dosha-info-card { padding: 10px; border: 1px solid #ccc; box-shadow: none; text-align: left; font-size: 0.85em; flex: 1; }
 
-            /* Force browsers to print borders and light backgrounds correctly */
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
@@ -761,7 +750,7 @@
                 doshaInfoTitle: "Tìm Hiểu Về Các Thể Tạng (Dosha)",
                 vataInfo: "<strong>Vata (Khí & Không gian):</strong> Năng lượng của chuyển động. Khi cân bằng: sáng tạo, tràn đầy sức sống. Khi mất cân bằng: lo âu, khô ráp, tiêu hóa thất thường.",
                 pittaInfo: "<strong>Pitta (Lửa & Nước):</strong> Năng lượng của chuyển hóa. Khi cân bằng: thông minh, can đảm, tiêu hóa tốt. Khi mất cân bằng: tức giận, viêm nhiễm, kiệt sức.",
-                kaphaInfo: "<strong>Kapha (Đất & Nước):</strong> Năng lượng của cấu trúc. Khi cân bằng: điềm tĩnh, từ bi, miễn dịch tốt. Khi mất cân bằng: trì tự, bám chấp, dễ tăng cân."
+                kaphaInfo: "<strong>Kapha (Đất & Nước):</strong> Năng lượng của cấu trúc. Khi cân bằng: điềm tĩnh, từ bi, miễn dịch tốt. Khi mất cân bằng: trì trệ, bám chấp, dễ tăng cân."
             }
         };
 
@@ -885,330 +874,10 @@
         </tr>
         <tr>
           <td class="rank-label">${translations[currentLang].primary}</td>
-          <td style="color: #4caf50; font-weight: bold;">${capitalize(prakrutiRank[0])}</td>
-          <td style="color: #4caf50; font-weight: bold;">${capitalize(vikrutiRank[0])}</td>
+          <td style="color: var(--${prakrutiRank[0]}-color); font-weight: bold; font-size: 1.1em;">${capitalize(prakrutiRank[0])}</td>
+          <td style="color: var(--${vikrutiRank[0]}-color); font-weight: bold; font-size: 1.1em;">${capitalize(vikrutiRank[0])}</td>
         </tr>
         <tr>
           <td class="rank-label">${translations[currentLang].secondary}</td>
-          <td>${capitalize(prakrutiRank[1])}</td>
-          <td>${capitalize(vikrutiRank[1])}</td>
-        </tr>
-        <tr>
-          <td class="rank-label">${translations[currentLang].tertiary}</td>
-          <td>${capitalize(prakrutiRank[2])}</td>
-          <td>${capitalize(vikrutiRank[2])}</td>
-        </tr>
-      </table>
-    `;
-
-            if (isShared) {
-                resultsHTML += `
-        <div class="action-buttons">
-          <button class="action-btn" onclick="window.print()">
-            ${printIcon} ${translations[currentLang].printProfile}
-          </button>
-          <button class="action-btn" onclick="window.location.href = window.location.pathname">
-            ${resetIcon} ${translations[currentLang].takeQuiz || 'Take the Quiz'}
-          </button>
-        </div>
-      `;
-            } else {
-                resultsHTML += `
-        <div class="action-buttons">
-          <button class="action-btn" id="copyTextBtn" onclick="exportToText()">
-            ${copyIcon} ${translations[currentLang].copyProfile}
-          </button>
-          <button class="action-btn" onclick="shareResults()">
-            ${shareIcon} ${translations[currentLang].shareProfile}
-          </button>
-          <button class="action-btn" onclick="window.print()">
-            ${printIcon} ${translations[currentLang].printProfile}
-          </button>
-          <button class="action-btn" onclick="resetQuizData()">
-            ${resetIcon} ${translations[currentLang].resetQuiz}
-          </button>
-        </div>
-      `;
-            }
-
-            resultsHTML += `
-              <div class="dosha-info-section">
-                <h3 style="text-align:center; color:#333; margin-bottom: 20px;">${translations[currentLang].doshaInfoTitle}</h3>
-                <div class="dosha-info-grid">
-                  <div class="dosha-info-card vata">
-                    ${icons.vata}
-                    <p>${translations[currentLang].vataInfo}</p>
-                  </div>
-                  <div class="dosha-info-card pitta">
-                    ${icons.pitta}
-                    <p>${translations[currentLang].pittaInfo}</p>
-                  </div>
-                  <div class="dosha-info-card kapha">
-                    ${icons.kapha}
-                    <p>${translations[currentLang].kaphaInfo}</p>
-                  </div>
-                </div>
-              </div>
-            `;
-
-            document.getElementById('results').innerHTML = resultsHTML;
-
-            if (!isSharedView) {
-                setTimeout(() => {
-                    document.getElementById('results').scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                }, 100);
-            }
-        }
-
-        function calculateResults() {
-            const counts = getCurrentCounts();
-            displayDashboard(counts, isSharedView);
-        }
-
-        async function exportToText() {
-            try {
-                const response = await fetch('/.netlify/functions/saveQuiz', {
-                    method: 'POST',
-                    body: JSON.stringify(selections)
-                });
-
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-                const result = await response.json();
-                const link = window.location.origin + window.location.pathname + '?id=' + result.id + '&l=' + currentLang;
-
-                navigator.clipboard.writeText(link).then(() => {
-                    const copyBtn = document.getElementById('copyTextBtn');
-                    const originalText = copyBtn.innerHTML;
-                    copyBtn.innerHTML = translations[currentLang].copied;
-                    setTimeout(() => {
-                        copyBtn.innerHTML = originalText;
-                    }, 2000);
-                });
-            } catch (e) {
-                console.error("Function failed to trigger:", e);
-                alert("Sharing failed. Ensure Netlify functions and Supabase are correctly configured.");
-            }
-        }
-
-        async function shareResults() {
-            try {
-                const response = await fetch('/.netlify/functions/saveQuiz', {
-                    method: 'POST',
-                    body: JSON.stringify(selections)
-                });
-
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-                const result = await response.json();
-                const link = window.location.origin + window.location.pathname + '?id=' + result.id + '&l=' + currentLang;
-
-                const titleText = selections.name 
-                    ? (currentLang === 'en' ? `${selections.name}'s Ayurvedic Dosha Profile` : `Hồ sơ Thể tạng Ayurveda của ${selections.name}`)
-                    : (currentLang === 'en' ? 'My Ayurvedic Dosha Profile' : 'Hồ sơ Thể tạng Ayurveda của tôi');
-
-                if (navigator.share) {
-                    navigator.share({
-                        title: titleText,
-                        url: link
-                    });
-                } else {
-                    exportToText();
-                }
-            } catch (e) {
-                console.error("Function failed to trigger:", e);
-                alert("Sharing failed. Ensure Netlify functions and Supabase are correctly configured.");
-            }
-        }
-
-        async function checkSharedLink(params) {
-            if (params.has('id')) {
-                try {
-                    const response = await fetch('/.netlify/functions/getQuiz?id=' + params.get('id'));
-                    if (response.ok) {
-                        const sharedSelections = await response.json();
-                        selections = sharedSelections;
-                        isSharedView = true;
-                        setLang(currentLang);
-                        return true;
-                    }
-                } catch (e) {
-                    console.error("Failed to load shared quiz:", e);
-                }
-            }
-            return false;
-        }
-
-        /* --- CORE APP LOGIC --- */
-        async function initQuiz() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('l')) {
-                currentLang = params.get('l');
-            }
-
-            const isShared = await checkSharedLink(params);
-            if (!isShared) {
-                loadLocalData();
-                setLang(currentLang);
-            }
-        }
-
-        function loadLocalData() {
-            const saved = localStorage.getItem('doshaSelections');
-            if (saved) {
-                try {
-                    selections = JSON.parse(saved);
-                } catch (e) {
-                    selections = { name: "", prakruti: {}, vikruti: {} };
-                }
-            }
-            if(!selections.name) selections.name = "";
-        }
-
-        function saveLocalData() {
-            localStorage.setItem('doshaSelections', JSON.stringify(selections));
-        }
-
-        function resetQuizData() {
-            selections = { name: "", prakruti: {}, vikruti: {} };
-            document.getElementById('user-name').value = "";
-            saveLocalData();
-            isSharedView = false;
-            document.getElementById('shared-banner').style.display = 'none';
-            document.getElementById('results').innerHTML = '';
-            window.history.replaceState({}, document.title, window.location.pathname);
-            setLang(currentLang);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function setLang(lang) {
-            currentLang = lang;
-            document.getElementById('title').innerText = translations[currentLang].title;
-
-            const instr = document.getElementById('instructions');
-            if (instr) {
-                instr.innerHTML = translations[currentLang].instructions;
-                instr.style.display = 'block';
-            }
-            
-            const nameInput = document.getElementById('user-name');
-            nameInput.placeholder = translations[currentLang].namePlaceholder;
-            if (selections.name) nameInput.value = selections.name;
-
-            document.getElementById('submit-btn').innerText = translations[currentLang].submit;
-
-            document.getElementById('btn-en').classList.remove('active');
-            document.getElementById('btn-vi').classList.remove('active');
-            document.getElementById(`btn-${lang}`).classList.add('active');
-
-            const banner = document.getElementById('shared-banner');
-            if (isSharedView) {
-                let bannerText = translations[currentLang].sharedMsg;
-                if (selections.name) {
-                    bannerText = currentLang === 'en' ? `You are viewing ${selections.name}'s Dosha profile. You can scroll through the quiz to see the answers.` : `Bạn đang xem hồ sơ Thể tạng của ${selections.name}. Bạn có thể cuộn xuống để xem các câu trả lời.`;
-                }
-                banner.innerHTML = bannerText;
-                banner.style.display = 'block';
-                document.getElementById('name-section').style.display = 'none';
-            } else {
-                banner.style.display = 'none';
-                document.getElementById('name-section').style.display = 'block';
-            }
-
-            renderQuiz();
-
-            if (isSharedView || document.getElementById('results').innerHTML.trim() !== '') {
-                calculateResults();
-            }
-
-            updateProgress();
-        }
-
-        function selectOption(type, qId, dosha) {
-            if (selections[type][qId] === dosha) {
-                delete selections[type][qId];
-            } else {
-                selections[type][qId] = dosha;
-            }
-
-            isSharedView = false;
-            document.getElementById('shared-banner').style.display = 'none';
-            document.getElementById('name-section').style.display = 'block';
-            saveLocalData();
-
-            const buttons = document.querySelectorAll(`.sel-btn[data-qid="${qId}"][data-type="${type}"]`);
-            buttons.forEach(btn => {
-                if (btn.dataset.dosha === dosha && selections[type][qId] === dosha) {
-                    btn.classList.add('selected');
-                } else {
-                    btn.classList.remove('selected');
-                }
-            });
-
-            updateProgress();
-
-            if (document.getElementById('results').innerHTML.trim() !== '') {
-                calculateResults();
-            }
-        }
-
-        function updateProgress() {
-            let answered = 0;
-            questions.forEach(q => {
-                if (selections.prakruti[q.id] || selections.vikruti[q.id]) answered++;
-            });
-            const progress = (answered / questions.length) * 100;
-            document.getElementById('progress-bar').style.width = `${progress}%`;
-        }
-
-        function renderQuiz() {
-            const container = document.getElementById('quiz-content');
-            container.innerHTML = '';
-
-            questions.forEach(q => {
-                const qData = q[currentLang];
-                const block = document.createElement('div');
-                block.className = 'question-block';
-
-                let html = `<div class="question-title">${qData.trait}</div><div class="options-grid">`;
-
-                ['vata', 'pitta', 'kapha'].forEach(dosha => {
-                    html += `
-          <div class="option-card ${dosha}">
-            ${icons[dosha]}
-            <div>
-              <div class="dosha-name">${translations[currentLang][dosha]}</div>
-              <div class="dosha-desc">${qData[dosha]}</div>
-            </div>
-          </div>
-        `;
-                });
-                html += `</div>`;
-
-                html += `<div class="selection-area">`;
-                ['prakruti', 'vikruti'].forEach(type => {
-                    const label = type === 'prakruti' ? translations[currentLang].longTerm : translations[currentLang].present;
-                    html += `<div class="selection-row">
-                  <div class="selection-label">${label}</div>
-                  <div class="selection-buttons">`;
-                    ['vata', 'pitta', 'kapha'].forEach(dosha => {
-                        const isSelected = (selections[type] && selections[type][q.id] === dosha) ? 'selected' : '';
-                        html += `<button class="sel-btn ${dosha} ${isSelected}" data-qid="${q.id}" data-type="${type}" data-dosha="${dosha}" onclick="selectOption('${type}', '${q.id}', '${dosha}')">${translations[currentLang][dosha]}</button>`;
-                    });
-                    html += `</div></div>`;
-                });
-                html += `</div>`;
-
-                block.innerHTML = html;
-                container.appendChild(block);
-            });
-            document.getElementById('submit-btn').style.display = 'block';
-        }
-
-        initQuiz();
-    </script>
-</body>
-
-</html>
+          <td style="color: var(--${prakrutiRank[1]}-color); font-weight: bold; font-size: 1.1em;">${capitalize(prakrutiRank[1])}</td>
+          <td style="color: var(--${vikrutiRank[1]}-color); font-weight: bold; font-size: 1
