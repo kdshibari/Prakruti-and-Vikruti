@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ayurvedic Dosha Quiz</title>
+    <title>Ayurvedic Dosha Quiz & Intake</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap');
 
@@ -76,7 +76,7 @@
             margin-top: 10px;
         }
 
-        /* UNIFIED STICKY HEADER */
+        /* Unified Sticky Header */
         .sticky-top-bar {
             position: sticky;
             top: 15px;
@@ -107,68 +107,17 @@
             margin-right: auto;
         }
 
-        .progress-container {
-            flex-grow: 1;
-            height: 8px;
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
-            transition: height 0.4s ease;
-        }
-
+        .progress-container { flex-grow: 1; height: 8px; background: rgba(0, 0, 0, 0.05); border-radius: 10px; overflow: hidden; transition: height 0.4s ease; }
         .sticky-top-bar.scrolled .progress-container { height: 4px; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, var(--vata-color), var(--pitta-color), var(--kapha-color)); width: 0%; transition: width 0.4s ease; border-radius: 10px; }
 
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--vata-color), var(--pitta-color), var(--kapha-color));
-            width: 0%;
-            transition: width 0.4s ease;
-            border-radius: 10px;
-        }
-
-        .lang-switch {
-            display: flex;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 40px;
-            padding: 4px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-            border: 1px solid #eee;
-            flex-shrink: 0;
-        }
-
-        .lang-btn {
-            background: transparent;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 1.2em;
-            transition: all 0.3s ease;
-            filter: grayscale(100%) opacity(0.4);
-            margin: 0;
-        }
-
-        .lang-btn.active {
-            background: #fff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            filter: grayscale(0%) opacity(1);
-            transform: scale(1.05);
-        }
+        .lang-switch { display: flex; background: rgba(255, 255, 255, 0.9); border-radius: 40px; padding: 4px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02); border: 1px solid #eee; flex-shrink: 0; }
+        .lang-btn { background: transparent; border: none; padding: 6px 10px; border-radius: 30px; cursor: pointer; font-size: 1.2em; transition: all 0.3s ease; filter: grayscale(100%) opacity(0.4); margin: 0; }
+        .lang-btn.active { background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); filter: grayscale(0%) opacity(1); transform: scale(1.05); }
 
         .header-section { text-align: center; margin-bottom: 20px; }
 
-        .logo-container {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 50%;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-
+        .logo-container { display: inline-flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 50%; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05); margin-bottom: 20px; transition: transform 0.4s ease, box-shadow 0.4s ease; }
         .logo-container:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08); }
 
         h1 { color: #333; font-weight: 600; margin: 5px 0; font-size: 2.2em; letter-spacing: 0.5px; }
@@ -179,33 +128,9 @@
         .view-btn { background: transparent; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-size: 0.95em; font-weight: 600; color: #777; font-family: 'Outfit', sans-serif; transition: all 0.3s ease; }
         .view-btn.active { background: #fff; color: #333; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); }
 
-        .instruction-box {
-            background: rgba(255, 255, 255, 0.7);
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-top: 15px;
-            text-align: left;
-            font-size: 0.95em;
-            line-height: 1.6;
-            color: #555;
-            border: 1px solid rgba(255, 255, 255, 0.9);
-        }
+        .instruction-box { background: rgba(255, 255, 255, 0.7); padding: 15px 20px; border-radius: 12px; margin-top: 15px; text-align: left; font-size: 0.95em; line-height: 1.6; color: #555; border: 1px solid rgba(255, 255, 255, 0.9); }
 
-        .glass-input, .glass-textarea, .glass-select {
-            width: 100%;
-            padding: 12px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.7);
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.95em;
-            color: #333;
-            outline: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-            box-sizing: border-box;
-        }
-
+        .glass-input, .glass-textarea, .glass-select { width: 100%; padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.9); background: rgba(255, 255, 255, 0.7); font-family: 'Outfit', sans-serif; font-size: 0.95em; color: #333; outline: none; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.02); box-sizing: border-box; }
         .glass-input:focus, .glass-textarea:focus, .glass-select:focus { background: #fff; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); border-color: #ddd; }
         .glass-textarea { resize: vertical; min-height: 80px; }
 
@@ -214,14 +139,7 @@
 
         .shared-banner { background: linear-gradient(135deg, #e3f2fd, #e8f5e9); border: 1px solid #87c5d8; color: #333; padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center; font-weight: 500; font-size: 1.05em; display: none; }
 
-        .question-block, .form-block {
-            background: rgba(255, 255, 255, 0.65);
-            padding: 30px;
-            border-radius: 24px;
-            margin-bottom: 30px;
-            border: 1px solid var(--border-glass);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02);
-        }
+        .question-block, .form-block { background: rgba(255, 255, 255, 0.65); padding: 30px; border-radius: 24px; margin-bottom: 30px; border: 1px solid var(--border-glass); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.02); }
 
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .form-group { display: flex; flex-direction: column; text-align: left; }
@@ -288,16 +206,12 @@
         .footer-text { text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; margin-top: 40px; color: #999; }
         .text-rose { color: #fb7185; }
 
-        /* Mobile specific styling */
         @media (max-width: 768px) {
             body { padding: 10px; }
             .glass-container { padding: 20px 10px; border-radius: 20px; margin-top: 10px; }
-            
-            /* Combined Sticky Header Mobile adjustments */
             .sticky-top-bar { padding: 10px 15px; gap: 10px; width: 100%; top: 10px; }
             .sticky-top-bar.scrolled { padding: 8px 15px; width: 100%; }
             .lang-btn { padding: 4px 8px; font-size: 1.1em; }
-
             h1 { font-size: 1.6em; }
             .view-btn { padding: 8px 15px; font-size: 0.85em; }
             .question-block, .form-block { padding: 15px; border-radius: 16px; }
@@ -310,18 +224,24 @@
             .selection-row { flex-direction: column; align-items: stretch; }
             .selection-label { width: 100%; margin-bottom: 10px; text-align: center; }
             .selection-buttons { width: 100%; justify-content: space-between; }
+            .sel-btn { padding: 12px 5px; }
             .results-container { flex-direction: column; }
             .dashboard-table th, .dashboard-table td { padding: 12px 5px; font-size: 0.85em; }
             .action-btn { flex: 1; min-width: 45%; justify-content: center; padding: 12px 10px; font-size: 0.95em; }
             .dosha-info-grid { grid-template-columns: 1fr; }
         }
 
-        /* Print Styling */
+        /* Highly Optimized Print Styling to reduce from 17 pages down to 2-3 pages */
         @media print {
-            body { background: #fff; padding: 0; margin: 0; color: #000; font-size: 10pt; }
-            .bg-organic, .sticky-top-bar, .action-buttons, .primary-btn, .instruction-box, .shared-banner, .view-switch-container { display: none !important; }
+            body { background: #fff; padding: 0; margin: 0; color: #000; font-size: 9pt; }
+            
+            /* Hide non-essential UI */
+            .bg-organic, .sticky-top-bar, .action-buttons, .primary-btn, .shared-banner, .view-switch-container, .footer-text { display: none !important; }
+            
             .glass-container { border: none; box-shadow: none; margin: 0; padding: 0; max-width: 100%; display: block; }
             .name-input { border: none; background: none; font-weight: bold; font-size: 1.8em; padding: 0; box-shadow: none; color: #000; text-align: center; margin-bottom: 20px; }
+            
+            /* --- QUIZ PRINT STYLES --- */
             .results-container { display: flex; flex-direction: row; justify-content: space-between; gap: 10px; margin-top: 10px; margin-bottom: 20px; }
             .result-box { padding: 10px; border: 1px solid #ccc; box-shadow: none; flex: 1; margin: 0; }
             .result-box h3 { margin-bottom: 5px; font-size: 1.1em; }
@@ -341,8 +261,44 @@
             .dosha-info-section { margin-top: 30px; padding-top: 15px; border-top: 2px solid #ccc; page-break-inside: avoid; }
             .dosha-info-grid { display: flex; flex-direction: row; gap: 15px; margin-top: 10px; }
             .dosha-info-card { padding: 10px; border: 1px solid #ccc; box-shadow: none; text-align: left; font-size: 0.85em; flex: 1; }
-            .form-block { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; padding: 15px; margin-bottom: 15px; }
-            .glass-input, .glass-textarea { border: 1px solid #ccc; background: none; box-shadow: none; color: #000; }
+
+            /* --- FORM PRINT STYLES --- */
+            .form-block { padding: 10px 0; margin-bottom: 10px; border: none; border-bottom: 1px dashed #ccc; border-radius: 0; box-shadow: none; page-break-inside: auto; background: transparent !important;}
+            .form-title { font-size: 1.2em; margin-bottom: 10px; padding-bottom: 5px; }
+            
+            .form-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 8px 12px !important; }
+            .form-group { margin-bottom: 0; }
+            .form-label { font-size: 0.85em; margin-bottom: 2px; }
+            .print-half { grid-column: span 2 !important; }
+            .print-quarter { grid-column: span 1 !important; }
+            
+            /* Flatten inputs to underlined text */
+            .glass-input, .glass-textarea, .glass-select { 
+                border: none !important; 
+                border-bottom: 1px solid #888 !important; 
+                border-radius: 0 !important; 
+                padding: 2px 4px !important; 
+                margin: 0 !important; 
+                background: transparent !important; 
+                box-shadow: none !important;
+                height: auto !important;
+                min-height: 20px !important;
+            }
+            .glass-textarea { border: 1px solid #ccc !important; min-height: 50px !important; resize: none !important; }
+
+            /* Compress Checkboxes */
+            .checkbox-label { font-size: 0.85em; margin-bottom: 4px; line-height: 1.2; }
+            .checkbox-label input { width: 12px; height: 12px; margin-top: 1px; }
+
+            /* Medical History Compression */
+            .history-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 4px 10px !important; margin-top: 10px !important; }
+            .history-item { padding: 2px 5px !important; border: none !important; border-bottom: 1px dotted #ccc !important; border-radius: 0 !important; background: transparent !important; }
+            .history-item span { font-size: 0.75em !important; width: 65% !important; }
+            .history-checks { gap: 5px !important; }
+            .history-checks label { font-size: 0.7em !important; }
+            
+            .print-hide, .instruction-box { display: none !important; }
+
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
@@ -370,7 +326,7 @@
 
         <div class="header-section" id="header-section">
             <div class="logo-container">
-                <svg width="200" height="200" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="pitta-grad" x1="0" y1="0" x2="0" y2="-10">
                             <stop offset="0%" stop-color="#f4a261" stop-opacity="0.2" />
@@ -441,14 +397,14 @@
         <div id="form-view" style="display: none;">
             <div class="form-block">
                 <h2 class="form-title">Student Clinic Health Information & History Intake</h2>
-                <p style="font-size: 0.9em; line-height: 1.6; color: #555; margin-bottom: 20px;">
+                <p style="font-size: 0.9em; line-height: 1.6; color: #555; margin-bottom: 20px;" class="print-hide">
                     Please call or arrive on time for your appointment. Due to scheduling restrictions we cannot delay your appointment for missing application forms. We apologize for any delays in the clinical schedule (generally less than fifteen minutes).
                 </p>
                 
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label class="form-label">My student consultant's name is:</label>
-                        <input type="text" class="glass-input">
+                <div class="form-grid" style="display: block;">
+                    <div class="form-group full-width" style="margin-bottom: 10px;">
+                        <label class="form-label" style="display:inline-block;">My student consultant's name is: </label>
+                        <input type="text" class="glass-input" style="width:250px; display:inline-block; margin-left: 10px;">
                     </div>
                     <div class="form-group full-width">
                         <p style="font-size: 0.9em; line-height: 1.6; color: #555;">
@@ -456,7 +412,7 @@
                         </p>
                         <p style="font-size: 0.9em; line-height: 1.6; color: #555;">
                             My student consultant will provide a 90-120 minute educational Ayurvedic consultation in order to:
-                            <ul style="margin-top: 5px;">
+                            <ul style="margin-top: 5px; font-size: 0.9em; color:#555;">
                                 <li>Determine my mind-body constitution</li>
                                 <li>Identify and assess any imbalances that may exist</li>
                                 <li>Provide information and guidance relevant to helping me nourish, stimulate or balance vital energy</li>
@@ -477,12 +433,12 @@
                     <label class="checkbox-label"><input type="checkbox"> I agree that Twin Beans Farm is not responsible for any information provided by the student, which may contain errors, and that any injury is entirely my responsibility.</label>
                     <label class="checkbox-label"><input type="checkbox"> I acknowledge my health information may be shared with Twin Beans Farm staff and students for educational purposes (excluding personally identifiable info).</label>
                 </div>
-                <div class="form-grid" style="margin-top: 20px;">
-                    <div class="form-group">
+                <div class="form-grid" style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr;">
+                    <div class="form-group print-half">
                         <label class="form-label">Client Signature (Type Name)</label>
                         <input type="text" class="glass-input">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group print-half">
                         <label class="form-label">Date</label>
                         <input type="date" class="glass-input">
                     </div>
@@ -492,24 +448,24 @@
             <div class="form-block">
                 <h2 class="form-title">Personal Details</h2>
                 <div class="form-grid">
-                    <div class="form-group"><label class="form-label">Client Name</label><input type="text" class="glass-input"></div>
-                    <div class="form-group"><label class="form-label">Daytime Phone</label><input type="text" class="glass-input"></div>
+                    <div class="form-group print-half"><label class="form-label">Client Name</label><input type="text" class="glass-input"></div>
+                    <div class="form-group print-half"><label class="form-label">Daytime Phone</label><input type="text" class="glass-input"></div>
                     <div class="form-group full-width"><label class="form-label">Address</label><input type="text" class="glass-input"></div>
-                    <div class="form-group full-width"><label class="form-label">City, ST, Zip</label><input type="text" class="glass-input"></div>
-                    <div class="form-group"><label class="form-label">Email</label><input type="email" class="glass-input"></div>
-                    <div class="form-group"><label class="form-label">Cell</label><input type="text" class="glass-input"></div>
-                    <div class="form-group"><label class="form-label">Age</label><input type="number" class="glass-input"></div>
-                    <div class="form-group"><label class="form-label">DOB</label><input type="date" class="glass-input"></div>
-                    <div class="form-group"><label class="form-label">Marital Status</label><input type="text" class="glass-input"></div>
-                    <div class="form-group"><label class="form-label">Occupation</label><input type="text" class="glass-input"></div>
-                    <div class="form-group"><label class="form-label">Referred By</label><input type="text" class="glass-input"></div>
-                    <div class="form-group"><label class="form-label">Family Physician</label><input type="text" class="glass-input"></div>
+                    <div class="form-group print-half"><label class="form-label">City, ST, Zip</label><input type="text" class="glass-input"></div>
+                    <div class="form-group print-half"><label class="form-label">Email</label><input type="email" class="glass-input"></div>
+                    <div class="form-group print-quarter"><label class="form-label">Cell</label><input type="text" class="glass-input"></div>
+                    <div class="form-group print-quarter"><label class="form-label">Age</label><input type="number" class="glass-input"></div>
+                    <div class="form-group print-quarter"><label class="form-label">DOB</label><input type="date" class="glass-input"></div>
+                    <div class="form-group print-quarter"><label class="form-label">Marital Status</label><input type="text" class="glass-input"></div>
+                    <div class="form-group print-half"><label class="form-label">Occupation</label><input type="text" class="glass-input"></div>
+                    <div class="form-group print-half"><label class="form-label">Referred By</label><input type="text" class="glass-input"></div>
+                    <div class="form-group print-half"><label class="form-label">Family Physician</label><input type="text" class="glass-input"></div>
                 </div>
             </div>
 
             <div class="form-block">
                 <h2 class="form-title">Objectives</h2>
-                <p style="font-size: 0.9em; color: #555; margin-bottom: 15px;">Select the item below that reflects your main objective (one only). Please note that Ayurvedic Consultations do not include medical diagnosis and treatments. If you are concerned about a medical condition, you should see a medical doctor.</p>
+                <p style="font-size: 0.9em; color: #555; margin-bottom: 15px;" class="print-hide">Select the item below that reflects your main objective (one only). Please note that Ayurvedic Consultations do not include medical diagnosis and treatments. If you are concerned about a medical condition, you should see a medical doctor.</p>
                 <div class="form-group full-width">
                     <label class="checkbox-label"><input type="radio" name="objective"> I want an alternative approach to allopathic medicine for managing illness and disease</label>
                     <label class="checkbox-label"><input type="radio" name="objective"> I want to improve my general health and wellness and reduce my vulnerability to illness and disease</label>
@@ -517,7 +473,7 @@
                     <label class="checkbox-label"><input type="radio" name="objective"> I want to change my habits and behavioral patterns to improve my relationships with others</label>
                     <label class="checkbox-label"><input type="radio" name="objective"> I want to manage stress, tension and worry to attain a more stable emotional nature</label>
                 </div>
-                <div class="form-group full-width" style="margin-top: 20px;">
+                <div class="form-group full-width" style="margin-top: 15px;">
                     <label class="form-label">What do you want to achieve in terms of your health and wellness? Please also tell us your current concerns.</label>
                     <textarea class="glass-textarea"></textarea>
                 </div>
@@ -525,7 +481,7 @@
 
             <div class="form-block">
                 <h2 class="form-title">Medical History</h2>
-                <p style="font-size: 0.9em; color: #555;">Check appropriate boxes if you or your family members have a history of the following:</p>
+                <p style="font-size: 0.9em; color: #555;" class="print-hide">Check appropriate boxes if you or your family members have a history of the following:</p>
                 <div class="history-grid" id="history-grid">
                     </div>
                 <div class="form-group full-width" style="margin-top: 20px;">
@@ -540,9 +496,9 @@
                     <div class="form-group full-width">
                         <label class="checkbox-label" style="font-weight:600;"><input type="checkbox"> Are you currently under a physician’s care?</label>
                     </div>
-                    <div class="form-group"><label class="form-label">Last Physical Exam Date</label><input type="date" class="glass-input"></div>
-                    <div class="form-group"><label class="form-label">Height</label><input type="text" class="glass-input"></div>
-                    <div class="form-group"><label class="form-label">Weight</label><input type="text" class="glass-input"></div>
+                    <div class="form-group print-half"><label class="form-label">Last Physical Exam Date</label><input type="date" class="glass-input"></div>
+                    <div class="form-group print-quarter"><label class="form-label">Height</label><input type="text" class="glass-input"></div>
+                    <div class="form-group print-quarter"><label class="form-label">Weight</label><input type="text" class="glass-input"></div>
                     <div class="form-group full-width">
                         <label class="form-label">What prescription drugs are you taking (including birth control)?</label>
                         <textarea class="glass-textarea"></textarea>
@@ -559,7 +515,7 @@
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <label class="form-label">Please write down all food you have eaten and drank for the last three days, with timing.</label>
-                        <textarea class="glass-textarea" style="min-height: 150px;"></textarea>
+                        <textarea class="glass-textarea" style="min-height: 120px;"></textarea>
                     </div>
                     <div class="form-group full-width">
                         <label class="form-label">When and how often do you eliminate? What does your poop look like (color, shape, quantity, odor)?</label>
@@ -568,7 +524,7 @@
                 </div>
             </div>
 
-            <div class="form-block">
+            <div class="form-block print-hide">
                 <h2 class="form-title">Required Photos</h2>
                 <p style="font-size: 0.9em; line-height: 1.6; color: #555;">
                     Please email the following photos before your first appointment (at least 48 hours prior), and at least once a year afterwards. You can send separate photos, or save all together in a google drive link.
@@ -592,7 +548,7 @@
                 </p>
             </div>
 
-            <button class="primary-btn" onclick="window.print()">Print Intake Form</button>
+            <button class="primary-btn print-hide" onclick="window.print()">Print Intake Form</button>
         </div>
 
         <p class="footer-text">
@@ -700,451 +656,4 @@
             { id: "mental", en: { trait: "Mental Activity", vata: "Hyperactive, overthinking, variable, scattered thoughts, difficulty making decisions", pitta: "Moderate, steady, goal oriented, makes decisions easily", kapha: "Dull, slow, methodical, careful but easy going about decisions" }, vi: { trait: "Hoạt động tinh thần", vata: "Quá năng động, suy nghĩ nhiều, phân tán, khó đưa ra quyết định", pitta: "Vừa phải, ổn định, hướng đến mục tiêu, dễ đưa ra quyết định", kapha: "Chậm chạp, có phương pháp, thoải mái khi quyết định" } },
             { id: "stress", en: { trait: "Reaction to Stress", vata: "Overwhelm, worry", pitta: "Irritable, but usually rise to the challenge", kapha: "Withdrawal, reclusive" }, vi: { trait: "Phản ứng với căng thẳng", vata: "Choáng ngợp, lo lắng", pitta: "Dễ cáu kỉnh nhưng có khả năng vượt qua thử thách", kapha: "Thu mình, có xu hướng tách biệt" } },
             { id: "emotions", en: { trait: "Emotions", vata: "Anxiety, fear, uncertainty", pitta: "Anger, hate, jealousy", kapha: "Calm, greedy, attachment" }, vi: { trait: "Cảm xúc", vata: "Lo âu, sợ hãi, bất an", pitta: "Giận dữ, ghét bỏ, ghen tị", kapha: "Bình tĩnh, tham lam, bám chấp" } },
-            { id: "intellect", en: { trait: "Intellect", vata: "Quick but faulty response, answering without fully thinking", pitta: "Sharp, accurate response, quick, witty", kapha: "Slow, exact, thoughtful, mindful, steady" }, vi: { trait: "Trí tuệ / cách tư duy", vata: "Phản ứng nhanh nhưng thiếu chính xác, trả lời khi chưa suy nghĩ kỹ", pitta: "Sắc bén, chính xác, nhanh trí, hóm hỉnh", kapha: "Chậm, chính xác, sâu sắc, chú tâm, ổn định" } },
-            { id: "dreams", en: { trait: "Dreams", vata: "Quick, active, many, fearful, no real focus", pitta: "Fiery, war, violence, task oriented", kapha: "Lakes, snow, romantic, lazy, no dreams" }, vi: { trait: "Giấc mơ", vata: "Nhanh, nhiều hoạt động, mang tính sợ hãi, không có chủ đề rõ", pitta: "Có lửa, chiến tranh, bạo lực hoặc xoay quanh công việc", kapha: "Hồ nước, tuyết, lãng mạn, lười biếng, ít nhớ giấc mơ" } },
-            { id: "speech", en: { trait: "Speech", vata: "Rapid, unclear, airy, anxious", pitta: "Sharp, penetrating, convincing", kapha: "Slow, monotonous, soothing" }, vi: { trait: "Cách nói", vata: "Nhanh, không rõ ràng, nhẹ thoáng, có vẻ lo âu", pitta: "Sắc, thuyết phục, có sức xuyên thấu", kapha: "Chậm, đều đều, dịu và tạo cảm giác xoa dịu" } }
-        ];
-
-        const historyOptions = [
-            "Allergies to Food/Drugs/Mold", "Anemia", "Arthritis", "Asthma, Pneumonia, TB", 
-            "Autoimmune Disease", "Blood Pressure (High/Low)", "Cancer / Chemotherapy / Radiation", 
-            "Chest Pain/Angina", "Cholesterol / Triglycerides (High)", "Contact Lenses / Prescription Glasses", 
-            "Dental Treatment Complications", "Diabetes", "Dizziness, Fainting", "Epilepsy, Convulsions, Seizures", 
-            "Feet or Ankles, Swelling", "Glaucoma, Eye Surgery", "Headaches/Migraines", "Heart Attack / Disease / Surgery", 
-            "Heart Murmur, Palpitations", "Hepatitis A / B / Other", "HIV Exposure", "IBS, Colitis, Crohn’s, Celiac, etc.", 
-            "Implant, Prosthesis", "Kidney or Bladder Disease / Infection", "Mononucleosis, Jaundice, Gallstone", 
-            "Pain/Ringing in the Ear", "Parasites / Tropical / Chronic Infection", "Popping, Clicking, Locking of the Jaw", 
-            "Prolonged Bleeding When Cut", "Psychiatric Treatment", "Rheumatic / High Fever", "Shortness of Breath", 
-            "Stroke, Cerebro-Vascular Accident", "Thyroid Disease or Medication", "Ulcers, Intestinal Bleeding", "Venereal Diseases"
-        ];
-
-        /* --- HELPER FUNCTIONS --- */
-        function saveName(val) {
-            selections.name = val.trim();
-            saveLocalData();
-        }
-
-        function getCurrentCounts() {
-            let counts = { prakruti: { vata: 0, pitta: 0, kapha: 0 }, vikruti: { vata: 0, pitta: 0, kapha: 0 } };
-            for (let key in selections.prakruti) { counts.prakruti[selections.prakruti[key]]++; }
-            for (let key in selections.vikruti) { counts.vikruti[selections.vikruti[key]]++; }
-            return counts;
-        }
-
-        function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-
-        /* --- DISPLAY DASHBOARD --- */
-        function displayDashboard(counts, isShared) {
-            document.getElementById('submit-btn').style.display = 'none';
-
-            const instr = document.getElementById('instructions');
-            if (instr) instr.style.display = 'none';
-            document.getElementById('name-section').style.display = 'none';
-
-            document.getElementById('progress-bar').style.width = '100%';
-
-            let resultsHTML = `<div class="results-container">`;
-
-            ['prakruti', 'vikruti'].forEach(type => {
-                let title = type === 'prakruti' ? translations[currentLang].resultsLongTerm : translations[currentLang].resultsPresent;
-                resultsHTML += `
-        <div class="result-box">
-          <h3 style="font-size: 1.35em; margin-bottom: 20px; font-weight: 600; color: #333;">${title}</h3>
-          <p style="color: #4b8ba0; font-size: 1.2em; font-weight: 600; margin: 12px 0;">Vata: ${counts[type].vata}</p>
-          <p style="color: #c97f45; font-size: 1.2em; font-weight: 600; margin: 12px 0;">Pitta: ${counts[type].pitta}</p>
-          <p style="color: #559157; font-size: 1.2em; font-weight: 600; margin: 12px 0;">Kapha: ${counts[type].kapha}</p>
-        </div>
-      `;
-            });
-
-            resultsHTML += `</div>`;
-
-            let prakrutiRank = Object.keys(counts.prakruti).sort((a, b) => counts.prakruti[b] - counts.prakruti[a]);
-            let vikrutiRank = Object.keys(counts.vikruti).sort((a, b) => counts.vikruti[b] - counts.vikruti[a]);
-            
-            let dashTitle = translations[currentLang].dashboardTitle;
-            if (selections.name) {
-                dashTitle = currentLang === 'en' ? `${selections.name}'s Dosha Profile` : `Hồ sơ Thể tạng của ${selections.name}`;
-            }
-
-            resultsHTML += `
-      <h2 style="font-size: 1.8em; margin-top: 30px; margin-bottom: 20px; text-align: center; color: #333;">
-        ${dashTitle}
-      </h2>
-      <table class="dashboard-table">
-        <tr>
-          <th>${translations[currentLang].rank}</th>
-          <th>${translations[currentLang].constPrakruti}</th>
-          <th>${translations[currentLang].resultsPresent}</th>
-        </tr>
-        <tr>
-          <td class="rank-label">${translations[currentLang].primary}</td>
-          <td style="color: var(--${prakrutiRank[0]}-color); font-weight: bold; font-size: 1.1em;">${capitalize(prakrutiRank[0])}</td>
-          <td style="color: var(--${vikrutiRank[0]}-color); font-weight: bold; font-size: 1.1em;">${capitalize(vikrutiRank[0])}</td>
-        </tr>
-        <tr>
-          <td class="rank-label">${translations[currentLang].secondary}</td>
-          <td style="color: var(--${prakrutiRank[1]}-color); font-weight: bold; font-size: 1.1em;">${capitalize(prakrutiRank[1])}</td>
-          <td style="color: var(--${vikrutiRank[1]}-color); font-weight: bold; font-size: 1.1em;">${capitalize(vikrutiRank[1])}</td>
-        </tr>
-        <tr>
-          <td class="rank-label">${translations[currentLang].tertiary}</td>
-          <td style="color: var(--${prakrutiRank[2]}-color); font-weight: bold; font-size: 1.1em;">${capitalize(prakrutiRank[2])}</td>
-          <td style="color: var(--${vikrutiRank[2]}-color); font-weight: bold; font-size: 1.1em;">${capitalize(vikrutiRank[2])}</td>
-        </tr>
-      </table>
-    `;
-
-            if (isShared) {
-                resultsHTML += `
-        <div class="action-buttons">
-          <button class="action-btn" onclick="window.print()">
-            ${printIcon} ${translations[currentLang].printProfile}
-          </button>
-          <button class="action-btn" onclick="window.location.href = window.location.pathname">
-            ${resetIcon} ${translations[currentLang].takeQuiz || 'Take the Quiz'}
-          </button>
-        </div>
-      `;
-            } else {
-                resultsHTML += `
-        <div class="action-buttons">
-          <button class="action-btn" id="copyTextBtn" onclick="exportToText()">
-            ${copyIcon} ${translations[currentLang].copyProfile}
-          </button>
-          <button class="action-btn" onclick="shareResults()">
-            ${shareIcon} ${translations[currentLang].shareProfile}
-          </button>
-          <button class="action-btn" onclick="window.print()">
-            ${printIcon} ${translations[currentLang].printProfile}
-          </button>
-          <button class="action-btn" onclick="resetQuizData()">
-            ${resetIcon} ${translations[currentLang].resetQuiz}
-          </button>
-        </div>
-      `;
-            }
-
-            resultsHTML += `
-              <div class="dosha-info-section">
-                <h3 style="text-align:center; color:#333; margin-bottom: 20px;">${translations[currentLang].doshaInfoTitle}</h3>
-                <div class="dosha-info-grid">
-                  <div class="dosha-info-card vata">
-                    ${icons.vata}
-                    <p>${translations[currentLang].vataInfo}</p>
-                  </div>
-                  <div class="dosha-info-card pitta">
-                    ${icons.pitta}
-                    <p>${translations[currentLang].pittaInfo}</p>
-                  </div>
-                  <div class="dosha-info-card kapha">
-                    ${icons.kapha}
-                    <p>${translations[currentLang].kaphaInfo}</p>
-                  </div>
-                </div>
-              </div>
-            `;
-
-            document.getElementById('results').innerHTML = resultsHTML;
-
-            if (!isSharedView) {
-                setTimeout(() => {
-                    document.getElementById('results').scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                }, 100);
-            }
-        }
-
-        function calculateResults() {
-            const counts = getCurrentCounts();
-            displayDashboard(counts, isSharedView);
-        }
-
-        async function exportToText() {
-            try {
-                const response = await fetch('/.netlify/functions/saveQuiz', {
-                    method: 'POST',
-                    body: JSON.stringify(selections)
-                });
-
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-                const result = await response.json();
-                const link = window.location.origin + window.location.pathname + '?id=' + result.id + '&l=' + currentLang;
-
-                navigator.clipboard.writeText(link).then(() => {
-                    const copyBtn = document.getElementById('copyTextBtn');
-                    const originalText = copyBtn.innerHTML;
-                    copyBtn.innerHTML = translations[currentLang].copied;
-                    setTimeout(() => {
-                        copyBtn.innerHTML = originalText;
-                    }, 2000);
-                });
-            } catch (e) {
-                console.error("Function failed to trigger:", e);
-                alert("Sharing failed. Ensure Netlify functions and Supabase are correctly configured.");
-            }
-        }
-
-        async function shareResults() {
-            try {
-                const response = await fetch('/.netlify/functions/saveQuiz', {
-                    method: 'POST',
-                    body: JSON.stringify(selections)
-                });
-
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-                const result = await response.json();
-                const link = window.location.origin + window.location.pathname + '?id=' + result.id + '&l=' + currentLang;
-
-                const titleText = selections.name 
-                    ? (currentLang === 'en' ? `${selections.name}'s Ayurvedic Dosha Profile` : `Hồ sơ Thể tạng Ayurveda của ${selections.name}`)
-                    : (currentLang === 'en' ? 'My Ayurvedic Dosha Profile' : 'Hồ sơ Thể tạng Ayurveda của tôi');
-
-                if (navigator.share) {
-                    navigator.share({
-                        title: titleText,
-                        url: link
-                    });
-                } else {
-                    exportToText();
-                }
-            } catch (e) {
-                console.error("Function failed to trigger:", e);
-                alert("Sharing failed. Ensure Netlify functions and Supabase are correctly configured.");
-            }
-        }
-
-        async function checkSharedLink(params) {
-            if (params.has('id')) {
-                try {
-                    const response = await fetch('/.netlify/functions/getQuiz?id=' + params.get('id'));
-                    if (response.ok) {
-                        const sharedSelections = await response.json();
-                        selections = sharedSelections;
-                        isSharedView = true;
-                        setLang(currentLang);
-                        return true;
-                    }
-                } catch (e) {
-                    console.error("Failed to load shared quiz:", e);
-                }
-            }
-            return false;
-        }
-
-        /* --- CORE APP LOGIC --- */
-        async function initQuiz() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('l')) {
-                currentLang = params.get('l');
-            }
-
-            const isShared = await checkSharedLink(params);
-            if (!isShared) {
-                loadLocalData();
-                setLang(currentLang);
-            }
-        }
-
-        function loadLocalData() {
-            const saved = localStorage.getItem('doshaSelections');
-            if (saved) {
-                try {
-                    selections = JSON.parse(saved);
-                } catch (e) {
-                    selections = { name: "", prakruti: {}, vikruti: {} };
-                }
-            }
-            if(!selections.name) selections.name = "";
-        }
-
-        function saveLocalData() {
-            localStorage.setItem('doshaSelections', JSON.stringify(selections));
-        }
-
-        function resetQuizData() {
-            selections = { name: "", prakruti: {}, vikruti: {} };
-            document.getElementById('user-name').value = "";
-            saveLocalData();
-            isSharedView = false;
-            document.getElementById('shared-banner').style.display = 'none';
-            document.getElementById('results').innerHTML = '';
-            window.history.replaceState({}, document.title, window.location.pathname);
-            setLang(currentLang);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function switchView(view) {
-            currentView = view;
-            
-            document.getElementById('btn-view-quiz').classList.remove('active');
-            document.getElementById('btn-view-form').classList.remove('active');
-            document.getElementById(`btn-view-${view}`).classList.add('active');
-
-            if (view === 'quiz') {
-                document.getElementById('quiz-view').style.display = 'block';
-                document.getElementById('form-view').style.display = 'none';
-                document.getElementById('instructions').style.display = 'block';
-                document.getElementById('title').innerText = translations[currentLang].title;
-                document.getElementById('progress-wrapper').style.display = 'block';
-            } else {
-                document.getElementById('quiz-view').style.display = 'none';
-                document.getElementById('form-view').style.display = 'block';
-                document.getElementById('instructions').style.display = 'none';
-                document.getElementById('title').innerText = translations[currentLang].formTitle;
-                document.getElementById('progress-wrapper').style.display = 'none';
-                
-                if (document.getElementById('history-grid').innerHTML.trim() === '') {
-                    historyOptions.forEach(opt => {
-                        const sanitizedId = opt.replace(/[^a-zA-Z0-9]/g, '');
-                        document.getElementById('history-grid').innerHTML += `
-                            <div class="history-item">
-                                <span style="font-size: 0.9em; width: 60%;">${opt}</span>
-                                <div class="history-checks">
-                                    <label><input type="checkbox" id="me-${sanitizedId}"> Me</label>
-                                    <label><input type="checkbox" id="fam-${sanitizedId}"> Fam</label>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
-            }
-        }
-
-        function setLang(lang) {
-            currentLang = lang;
-            
-            if (currentView === 'quiz') {
-                document.getElementById('title').innerText = translations[currentLang].title;
-                const instr = document.getElementById('instructions');
-                if (instr) {
-                    instr.innerHTML = translations[currentLang].instructions;
-                    instr.style.display = 'block';
-                }
-            } else {
-                document.getElementById('title').innerText = translations[currentLang].formTitle;
-            }
-            
-            const nameInput = document.getElementById('user-name');
-            nameInput.placeholder = translations[currentLang].namePlaceholder;
-            if (selections.name) nameInput.value = selections.name;
-
-            document.getElementById('submit-btn').innerText = translations[currentLang].submit;
-
-            document.getElementById('btn-en').classList.remove('active');
-            document.getElementById('btn-vi').classList.remove('active');
-            document.getElementById(`btn-${lang}`).classList.add('active');
-
-            const banner = document.getElementById('shared-banner');
-            if (isSharedView) {
-                let bannerText = translations[currentLang].sharedMsg;
-                if (selections.name) {
-                    bannerText = currentLang === 'en' ? `You are viewing ${selections.name}'s Dosha profile. You can scroll through the quiz to see the answers.` : `Bạn đang xem hồ sơ Thể tạng của ${selections.name}. Bạn có thể cuộn xuống để xem các câu trả lời.`;
-                }
-                banner.innerHTML = bannerText;
-                banner.style.display = 'block';
-                document.getElementById('name-section').style.display = 'none';
-            } else {
-                banner.style.display = 'none';
-                document.getElementById('name-section').style.display = 'block';
-            }
-
-            renderQuiz();
-
-            if (isSharedView || document.getElementById('results').innerHTML.trim() !== '') {
-                calculateResults();
-            }
-
-            updateProgress();
-        }
-
-        function selectOption(type, qId, dosha) {
-            if (selections[type][qId] === dosha) {
-                delete selections[type][qId];
-            } else {
-                selections[type][qId] = dosha;
-            }
-
-            isSharedView = false;
-            document.getElementById('shared-banner').style.display = 'none';
-            document.getElementById('name-section').style.display = 'block';
-            saveLocalData();
-
-            const buttons = document.querySelectorAll(`.sel-btn[data-qid="${qId}"][data-type="${type}"]`);
-            buttons.forEach(btn => {
-                if (btn.dataset.dosha === dosha && selections[type][qId] === dosha) {
-                    btn.classList.add('selected');
-                } else {
-                    btn.classList.remove('selected');
-                }
-            });
-
-            updateProgress();
-
-            if (document.getElementById('results').innerHTML.trim() !== '') {
-                calculateResults();
-            }
-        }
-
-        function updateProgress() {
-            let answered = 0;
-            questions.forEach(q => {
-                if (selections.prakruti[q.id] || selections.vikruti[q.id]) answered++;
-            });
-            const progress = (answered / questions.length) * 100;
-            document.getElementById('progress-bar').style.width = `${progress}%`;
-        }
-
-        function renderQuiz() {
-            const container = document.getElementById('quiz-content');
-            container.innerHTML = '';
-
-            questions.forEach(q => {
-                const qData = q[currentLang];
-                const block = document.createElement('div');
-                block.className = 'question-block';
-
-                let html = `<div class="question-title">${qData.trait}</div><div class="options-grid">`;
-
-                ['vata', 'pitta', 'kapha'].forEach(dosha => {
-                    html += `
-          <div class="option-card ${dosha}">
-            ${icons[dosha]}
-            <div>
-              <div class="dosha-name">${translations[currentLang][dosha]}</div>
-              <div class="dosha-desc">${qData[dosha]}</div>
-            </div>
-          </div>
-        `;
-                });
-                html += `</div>`;
-
-                html += `<div class="selection-area">`;
-                ['prakruti', 'vikruti'].forEach(type => {
-                    const label = type === 'prakruti' ? translations[currentLang].longTerm : translations[currentLang].present;
-                    html += `<div class="selection-row">
-                  <div class="selection-label">${label}</div>
-                  <div class="selection-buttons">`;
-                    ['vata', 'pitta', 'kapha'].forEach(dosha => {
-                        const isSelected = (selections[type] && selections[type][q.id] === dosha) ? 'selected' : '';
-                        html += `<button class="sel-btn ${dosha} ${isSelected}" data-qid="${q.id}" data-type="${type}" data-dosha="${dosha}" onclick="selectOption('${type}', '${q.id}', '${dosha}')">${translations[currentLang][dosha]}</button>`;
-                    });
-                    html += `</div></div>`;
-                });
-                html += `</div>`;
-
-                block.innerHTML = html;
-                container.appendChild(block);
-            });
-            document.getElementById('submit-btn').style.display = 'block';
-        }
-
-        initQuiz();
-    </script>
-</body>
-</html>
+            { id: "intellect", en: { trait: "Intellect", vata:
